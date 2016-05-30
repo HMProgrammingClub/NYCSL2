@@ -1,0 +1,224 @@
+<html>
+
+<head>
+    <title>NYCSL: Users</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
+</head>
+
+<body>
+
+<div class="ui sidebar inverted vertical menu">
+    <div class="item">
+        <div class="ui fluid category search">
+            <div class="ui icon input fluid">
+                <input class="prompt" type="text" placeholder="Search...">
+                <i class="search icon"></i>
+            </div>
+            <div class="results"></div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="header">Schools</div>
+        <div class="menu">
+            <a class="item">All Schools</a>
+            <a class="item">Horace Mann</a>
+            <a class="item">Dalton</a>
+            <a class="item">Stuyvesant</a>
+        </div>
+    </div>
+    <div class="item">
+        <div class="header">Games</div>
+        <div class="menu">
+            <a class="item">Steiner Tree</a>
+            <a class="item">Tron</a>
+            <a class="item">Roommate</a>
+            <a class="item">Traveling Salesman</a>
+        </div>
+    </div>
+    <a class="item active">
+        Users
+    </a>
+    <a class="item">
+        About
+    </a>
+</div>
+
+<div class="pusher">
+    <div class="ui container">
+    <div class="ui secondary menu segment">
+        <div class="item">
+            NYCSL
+        </div>
+        <a class="item" id="sidebarBtn">
+            <i class="sidebar icon"></i> Menu
+        </a>
+
+        <!-- LOGGED IN MENU
+        <div class="right menu">
+            <a class="item">
+                <i class="upload icon"></i>
+                Submit
+            </a>
+            <a class="item">
+                <img class="ui mini circular image" id="accountBtn" src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=460">
+            </a>
+        </div>
+        <div class="ui special popup vertical menu" style="width:110px; padding:5px 0px;">
+            <a class="item">
+                <i class="user icon"></i>
+                Profile
+            </a>
+            <a class="item">
+                <i class="sign out icon"></i>
+                Logout
+            </a>
+        </div> -->
+
+        <!-- LOGGED OUT MENU -->
+        <div class="right menu">
+            <a class="item" id="loginBtn">
+                <i class="sign in icon"></i>
+                Login with Github
+            </a>
+        </div>
+        <!-- LOGIN MENU -->
+        <div class="ui modal">
+            <div class="header">
+                Login with Github
+            </div>
+            <div class="image content">
+                <div class="description">
+                    <div class="ui header">Click the button below to login with Github.</div>
+                    <p>If you don't already have an account linked to your Github profile, that's ok. We'll automatically detect it and help you get things set up.</p>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="ui button fluid">
+                    <i class="github icon"></i>
+                    Connect to Github
+                </button>
+            </div>
+        </div> <!-- -->
+        <!-- SIGNUP MENU
+        <div class="ui modal">
+            <div class="header">
+                Signup with Github
+            </div>
+            <div class="image content"><div class="description">
+                <div class="ui form">
+                    <div class="field">
+                        <label>School</label>
+                        <select class="ui fluid search dropdown selection">
+                            <option value="">Select School</option>
+                            <option value="HM">Horace Mann School</option>
+                            <option value="DA">Dalton School</option>
+                            <option value="ST">Stuyvesant</option>
+                        </select>
+                    </div>
+                </div>
+            </div></div>
+            <div class="actions">
+                <button class="ui button fluid">
+                    Create Account
+                </button>
+            </div>
+        </div> -->
+    </div>
+
+    <select class="ui fluid search dropdown" multiple="">
+        <option value="">Filter by School</option>
+        <option value="HM">Horace Mann</option>
+        <option value="DA">Dalton</option>
+        <option value="ST">Stuyvesant</option>
+    </select><br />
+
+
+    <div class="ui four column doubling grid">
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+            <a class="image" href="/users/joshuagruenstein">
+                <img src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=300">
+            </a>
+            <div class="content">
+                <div class="header">Joshua Gruenstein</div>
+                <div class="meta">
+                    <a href="/school/horacemann">Horace Mann School</a>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<script src="js/general.js"></script>
+</body>
+</html>
