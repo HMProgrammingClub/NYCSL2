@@ -20,15 +20,6 @@
         </div>
     </div>
     <div class="item">
-        <div class="header">Schools</div>
-        <div class="menu">
-            <a class="item active">All Schools</a>
-            <a class="item">Horace Mann</a>
-            <a class="item">Dalton</a>
-            <a class="item">Stuyvesant</a>
-        </div>
-    </div>
-    <div class="item">
         <div class="header">Games</div>
         <div class="menu">
             <a class="item active">Steiner Tree</a>
@@ -129,18 +120,25 @@
     </div>
 
     <div class="ui grid" style="margin-top:-30px;">
-            <div class="row">
-                <div class="row column">
-                    <div class="ui huge message page grid">
-                        <h1 class="ui huge header">Steiner Tree</h1>
-                        <p>Find the shortest interconnect for a given set of points.
-                        <br />
-                        <a class="ui blue basic button" style="margin-top:10px" href="/blog/steiner-tree">Learn More</a>
-                        <a class="ui blue basic button" href="/blog/steiner-tree-tutorials">Tutorials</a></p>
-                    </div>
+        <div class="row">
+            <div class="row column">
+                <div class="ui huge message page grid">
+                    <h1 class="ui huge header">Steiner Tree</h1>
+                    <p>Find the shortest interconnect for a given set of points.
+                    <br />
+                    <a class="ui blue basic button" style="margin-top:10px" href="/blog/steiner-tree">Learn More</a>
+                    <a class="ui blue basic button" href="/blog/steiner-tree-tutorials">Tutorials</a></p>
                 </div>
             </div>
         </div>
+    </div>
+
+    <br /><select class="ui fluid search dropdown" multiple="">
+        <option value="">Filter by School</option>
+        <option value="HM">Horace Mann</option>
+        <option value="DA">Dalton</option>
+        <option value="ST">Stuyvesant</option>
+    </select>
 
     <table class="ui table unstackable">
         <thead><tr>
