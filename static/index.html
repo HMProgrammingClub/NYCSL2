@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-
 <html>
+
 <head>
     <title>NYCSL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css">
@@ -9,7 +8,47 @@
 </head>
 
 <body>
-    Hello World
-</body>
 
+<div class="ui sidebar inverted vertical menu">
+    <div class="item">
+        <div class="ui icon input">
+            <input type="text" placeholder="Search...">
+            <i class="search link icon"></i>
+        </div>
+    </div>
+    <a class="item">
+        Games
+    </a>
+    <a class="item">
+        Schools
+    </a>
+    <a class="item">
+        About
+    </a>
+</div>
+
+<div class="pusher">
+    <div class="ui secondary menu container segment">
+        <a class="item" id="sidebarBtn">
+            <i class="sidebar icon"></i> Menu
+        </a>
+        <div class="right menu"><a class="ui item">
+            <img class="ui mini circular image" id="accountBtn" src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=460">
+        </a></div>
+        <div class="ui special popup menu">
+            <a class="item">
+                <i class="settings icon"></i>
+                Profile
+            </a>
+            <a class="item">
+                <i class="user icon"></i>
+                Settings
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/general.js"></script>
+</body>
 </html>
