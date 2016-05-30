@@ -43,25 +43,80 @@
 </div>
 
 <div class="pusher">
-    <div class="ui secondary menu container segment">
+    <div class="ui container">
+    <div class="ui secondary menu segment">
         <a class="item" id="sidebarBtn">
             <i class="sidebar icon"></i> Menu
         </a>
-        <div class="right menu"><a class="ui item">
-            <img class="ui mini circular image" id="accountBtn" src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=460">
-        </a></div>
+        <div class="right menu">
+            <a class="item">
+                <i class="upload icon"></i>
+                Submit
+            </a>
+            <a class="item">
+                <img class="ui mini circular image" id="accountBtn" src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=460">
+            </a>
+        </div>
         <div class="ui special popup menu">
             <a class="item">
-                <i class="settings icon"></i>
+                <i class="user icon"></i>
                 Profile
             </a>
             <a class="item">
-                <i class="user icon"></i>
-                Settings
+                <i class="sign out icon"></i>
+                Logout
             </a>
         </div>
     </div>
 
+
+    <table class="ui table unstackable">
+        <thead><tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>School</th>
+            <th>Score</th>
+        </tr></thead>
+        <tbody>
+            <tr class='playerRow 0'>
+                <td><b>1</b></td>
+                <td><a href="/user/joshuagruenstein">Joshua Gruenstein</a></td>
+                <td><a href="/school/horacemann">Horace Mann</a></td>
+                <td>44</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <div class="ui flowing popup gamePopup 0">
+        <div class="ui feed">
+            <div class="event">
+                <div class="label">
+                    <i class="game icon"></i>
+                </div>
+                <div class="content summary">
+                    <div class="summary">
+                        Won against <a class="user">Henry Hunt</a>
+                        <div class="date">5 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+            <div class="event">
+                <div class="label">
+                    <i class="file archive outline icon"></i>
+                </div>
+                <div class="content summary">
+                    <div class="summary">
+                        New bot uploaded
+                        <div class="date">8 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </table>
+
+
+    </div>
 </div>
 
 <script src="js/general.js"></script>
