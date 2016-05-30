@@ -4,6 +4,12 @@ $("#sidebarBtn").click(function(e) {
     return false;
 });
 
+$("#loginBtn").click(function(e) {
+    e.preventDefault();
+    $('.ui.modal').modal('show');
+    return false;
+});
+
 $('#accountBtn').popup({
     popup: '.special.popup',
     hoverable: true,
@@ -36,6 +42,8 @@ var dummySearchContent = [
 $('.ui.search').search({
     source: dummySearchContent
 });
+
+$('.ui.dropdown').dropdown();
 
 var rows = document.querySelectorAll(".playerRow");
 for (var i=0; i<rows.length; i++) {
