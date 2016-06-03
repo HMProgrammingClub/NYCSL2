@@ -29,7 +29,7 @@ var Feed = React.createClass({
 var Leaderboard = React.createClass({
     schoolList: function(obj) {
         var schools = [];
-        this.props.rows.forEach(function(row) {
+        this.props.data.forEach(function(row) {
             var exists = false;
             schools.forEach(function(school) {
                 if (school.id === row.user.school.id) exists = true;
@@ -79,14 +79,10 @@ var Leaderboard = React.createClass({
     },
     render: function() {
         var schoolIDs = this.state.value;
-        console.log(schoolIDs);
-        var rows = this.props.rows.filter(function(row) {
+        var rows = this.props.data.filter(function(row) {
             var schoolContained = false;
             schoolIDs.forEach(function(schoolID) {
-                if (row.user.school.id === schoolID) {
-                    console.log(schoolID + " is contained");
-                    schoolContained = true;
-                }
+                if (row.user.school.id === schoolID) schoolContained = true;
             }); return schoolContained;
         });
         return (
@@ -112,8 +108,8 @@ var Leaderboard = React.createClass({
                         })}
                     </tbody>
                 </table>
-                {this.props.feeds.map(function(feed) {
-                    return <Feed events={feed.events} id={feed.id} key={feed.id} />
+                {rows.map(function(row) {
+                    return <Feed events={row.events} id={row.user.id} key={row.rank} />
                 })}
             </div>
         );
@@ -146,22 +142,22 @@ var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection fo
 ]}
 
 var leaderData = [
-    {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44},
-    {user: {id: 2, username: "truell20", name: "Michael Truell", school:{id: "DA", name: "Dalton"}}, rank: 2, score: 33},
-    {user: {id: 3, username: "flying.graysons", name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}}, rank: 3, score: 33}
-];
-
-var feedData = [
-    {id: 1, events: [{type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-                     {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}]},
-    {id: 2, events: [{type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-                     {type: "game", event: "Won against Joshua Gruenstein", time: new Date(new Date().getTime()-600000)}]},
-    {id: 3, events: [{type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-                     {type: "game", event: "Won against Joshua Gruenstein", time: new Date(new Date().getTime()-600000)}]}
+    {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44, events:[
+        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
+        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+    ]},
+    {user: {id: 2, username: "truell20", name: "Michael Truell", school:{id: "DA", name: "Dalton"}}, rank: 2, score: 33, events:[
+        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
+        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+    ]},
+    {user: {id: 3, username: "flying.graysons", name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}}, rank: 3, score: 33, events:[
+        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
+        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+    ]}
 ];
 
 ReactDOM.render(
-    <Leaderboard rows={leaderData} feeds={feedData} />,
+    <Leaderboard data={leaderData} />,
     document.getElementById('leaderBoard')
 );
 
