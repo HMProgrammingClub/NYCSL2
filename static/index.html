@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
 </head>
 
 <body>
@@ -147,23 +151,7 @@
         <option value="ST">Stuyvesant</option>
     </select>
 
-    <table class="ui table unstackable">
-        <thead><tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>School</th>
-            <th>Score</th>
-        </tr></thead>
-        <tbody>
-            <tr class='playerRow 0'>
-                <td><b>1</b></td>
-                <td><a href="/user/joshuagruenstein">Joshua Gruenstein</a></td>
-                <td>Horace Mann</td>
-                <td>44</td>
-            </tr>
-        </tbody>
-
-    </table>
+    <br /><div id="leaderBoard"></div>
 
     <div class="ui flowing popup gamePopup 0">
         <div class="ui feed">
@@ -197,7 +185,7 @@
 </div>
 
 <script src="js/general.js"></script>
-<script src="js/main.js"></script>
+<script type="text/babel" src="js/main.js"></script>
 
 </body>
 </html>
