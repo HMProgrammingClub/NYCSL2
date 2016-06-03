@@ -11,20 +11,6 @@ function linkPopups() {
     }
 }
 
-var PlayerRow = React.createClass({
-    render: function() {
-        var user = this.props.data.user;
-        return (
-            <tr className={'playerRow ' + user.id}>
-                <td><b>{this.props.data.rank}</b></td>
-                <td><a href={'/user/' + user.username}>{user.name}</a></td>
-                <td>{user.school}</td>
-                <td>{this.props.data.score}</td>
-            </tr>
-        );
-    }
-});
-
 var Leaderboard = React.createClass({
     render: function() {
         return (
@@ -36,8 +22,15 @@ var Leaderboard = React.createClass({
                     <th>Score</th>
                 </tr></thead>
                 <tbody>
-                    {this.props.data.map(function(playerRow) {
-                        return <PlayerRow data={playerRow} />
+                    {this.props.rows.map(function(row) {
+                        return (
+                            <tr className={'playerRow ' +row.user.id} key={row.rank}>
+                                <td><b>{row.rank}</b></td>
+                                <td><a href={'/user/' + row.user.username}>{row.user.name}</a></td>
+                                <td>{row.user.school}</td>
+                                <td>{row.score}</td>
+                            </tr>
+                        );
                     })}
                 </tbody>
             </table>
@@ -45,33 +38,27 @@ var Leaderboard = React.createClass({
     }
 });
 
-var FeedEvent = React.createClass({
-    render: function() {
-        return (
-            <div className="event">
-                <div className="label">
-                    <i className={this.props.data.type === "upload" ? "file archive outline icon" : "game icon"}></i>
-                </div>
-                <div className="content summary">
-                    <div className="summary">
-                        { this.props.data.event }
-                        <div className="date">
-                            { timeSince(this.props.data.time) + " ago" }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-});
-
 var Feed = React.createClass({
     render: function() {
         return (
-            <div className={"ui flowing popup gamePopup " + this.props.data.id}>
+            <div className={"ui flowing popup gamePopup " + this.props.id}>
                 <div className="ui feed">
-                    {this.props.data.events.map(function(feedEvent) {
-                        return <FeedEvent data={feedEvent} />
+                    {this.props.events.map(function(feedEvent, i) {
+                        return (
+                            <div className="event" key={i}>
+                                <div className="label">
+                                    <i className={feedEvent.type === "upload" ? "file archive outline icon" : "game icon"}></i>
+                                </div>
+                                <div className="content summary">
+                                    <div className="summary">
+                                        { feedEvent.event }
+                                        <div className="date">
+                                            { timeSince(feedEvent.time) + " ago" }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
                     })}
                 </div>
             </div>
@@ -83,8 +70,8 @@ var Feeds = React.createClass({
     render: function() {
         return (
             <div>
-                {this.props.data.map(function(feed) {
-                        return <Feed data={feed} />
+                {this.props.feeds.map(function(feed) {
+                        return <Feed events={feed.events} id={feed.id} key={feed.id} />
                 })}
             </div>
         );
@@ -112,12 +99,12 @@ var games = [
 ];
 
 ReactDOM.render(
-    <Leaderboard data={leaderData} />,
+    <Leaderboard rows={leaderData} />,
     document.getElementById('leaderBoard')
 );
 
 ReactDOM.render(
-    <Feeds data={feedData} />,
+    <Feeds feeds={feedData} />,
     document.getElementById('feedsBox')
 );
 
@@ -128,7 +115,7 @@ var Sidebar = React.createClass({
             if (game.season != season) {
                 season = game.season;
                 return (
-                    <div>
+                    <div key={game.id}>
                         <div className="ui horizontal divider inverted fitted">
                             {"Season " + game.season}
                         </div>
@@ -136,7 +123,7 @@ var Sidebar = React.createClass({
                     </div>
                 );
             } else return (
-                <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
+                <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")} key={game.id}>{game.name}</a>
             );
         });
 
