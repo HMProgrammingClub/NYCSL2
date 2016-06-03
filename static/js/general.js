@@ -90,8 +90,6 @@ var NavBar = React.createClass({
             hoverable: true,
             position : 'bottom center'
         });
-
-        $('.ui.dropdown').dropdown();
     },
     openMenu: function() {
         $('.ui.sidebar').sidebar('toggle');
