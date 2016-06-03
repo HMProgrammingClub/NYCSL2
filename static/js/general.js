@@ -62,10 +62,10 @@ var Sidebar = React.createClass({
                         { this.gameList(this.props.games, this.props.active) }
                     </div>
                 </div>
-                <a className={"item" + (this.props.active==="users"?" active":"")}>
+                <a href="/users" className={"item" + (this.props.active==="users"?" active":"")}>
                     Users
                 </a>
-                <a className={"item" + (this.props.active==="blog"?" active":"")}>
+                <a href="/blog" className={"item" + (this.props.active==="blog"?" active":"")}>
                     Blog
                 </a>
                 <div className="item">
@@ -79,12 +79,6 @@ var Sidebar = React.createClass({
 
 var NavBar = React.createClass({
     componentDidMount: function() {
-        $("#sidebarBtn").click(function(e) {
-            e.preventDefault();
-            $('.ui.sidebar').sidebar('toggle');
-            return false;
-        });
-
         $("#loginBtn").click(function(e) {
             e.preventDefault();
             $('.ui.modal').modal('show');
@@ -98,6 +92,9 @@ var NavBar = React.createClass({
         });
 
         $('.ui.dropdown').dropdown();
+    },
+    openMenu: function() {
+        $('.ui.sidebar').sidebar('toggle');
     },
     signInModal: function() {
         return (
@@ -186,7 +183,7 @@ var NavBar = React.createClass({
                 <a className="item" href="/">
                     <b>NYCSL</b>
                 </a>
-                <a className="item" id="sidebarBtn">
+                <a className="item" id="sidebarBtn" onClick={this.openMenu}>
                     <i className="sidebar icon"></i> Menu
                 </a>
                 { this.props.logState ? this.loggedInMenu(this.props.githubID) : this.loggedOutMenu() }
