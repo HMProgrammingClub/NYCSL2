@@ -72,6 +72,31 @@ var Leaderboard = React.createClass({
     }
 });
 
+var Jumbo = React.createClass({
+    render: function() {
+        return (
+            <div className="row">
+                <div className="row column">
+                    <div className="ui huge message page grid">
+                        <h1 className="ui huge header">{this.props.game}</h1>
+                        <p>{this.props.desc}
+                        <br />
+                        {this.props.links.map(function(link, i) {
+                            return <a className="ui blue basic button" style={{marginTop:"10px"}} href={link.url} key={i}>{link.txt}</a>
+                        })}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
+var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection for a given set of points.", links:[
+    {url:"/blog/steiner-tree",txt:"Learn More"},
+    {url:"/blog/steiner-tree-tutorial",txt:"Tutorials"}
+]}
+
 var leaderData = [
     {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school: "Horace Mann"}, rank: 1, score: 44},
     {user: {id: 2, username: "truell20", name: "Michael Truell", school: "Horace Mann"}, rank: 2, score: 33}
@@ -87,4 +112,9 @@ var feedData = [
 ReactDOM.render(
     <Leaderboard rows={leaderData} feeds={feedData} />,
     document.getElementById('leaderBoard')
+);
+
+ReactDOM.render(
+    <Jumbo game={jumboData.game} desc={jumboData.desc} links={jumboData.links} />,
+    document.getElementById('jumboBox')
 );
