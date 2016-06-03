@@ -1,5 +1,18 @@
 var Feed = React.createClass({
+    iconDict: {
+        "upload" : "file archive outline icon",
+        "game"   : "game icon",
+        "bug"    : "bug icon",
+        "win"    : "smile icon",
+        "lose"   : "frown icon",
+        "tie"    : "meh icon"
+    },
+    visualize: function(id) {
+        alert(id)
+    },
     render: function() {
+        var visualize = this.visualize;
+        var iconDict = this.iconDict;
         return (
             <div className={"ui flowing popup gamePopup " + this.props.id}>
                 <div className="ui feed">
@@ -7,10 +20,13 @@ var Feed = React.createClass({
                         return (
                             <div className="event" key={i}>
                                 <div className="label">
-                                    <i className={feedEvent.type === "upload" ? "file archive outline icon" : "game icon"}></i>
+                                    { feedEvent.id ? (
+                                        <i onClick={() => visualize(feedEvent.id)} className="play icon"></i>
+                                    ) : <i className={iconDict[feedEvent.type]}></i> }
                                 </div>
                                 <div className="content summary">
                                     <div className="summary">
+
                                         { feedEvent.event }
                                         <div className="date">
                                             { timeSince(feedEvent.time) + " ago" }
@@ -144,15 +160,15 @@ var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection fo
 var leaderData = [
     {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+        {type: "tie", event: "Tie against Henry Hunt", time: new Date(new Date().getTime()-600000), id:123}
     ]},
     {user: {id: 2, username: "truell20", name: "Michael Truell", school:{id: "DA", name: "Dalton"}}, rank: 2, score: 33, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+        {type: "win", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000), id:456}
     ]},
     {user: {id: 3, username: "flying.graysons", name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}}, rank: 3, score: 33, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000)}
+        {type: "lose", event: "Lost against Henry Hunt", time: new Date(new Date().getTime()-600000), id:789}
     ]}
 ];
 
