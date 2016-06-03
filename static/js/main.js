@@ -1,7 +1,10 @@
 var Feed = React.createClass({
     iconDict: {
-        "upload" : "file archive outline icon",
+        "upload" : "cloud upload icon",
+        "text-upload" : "file text outline icon",
+        "zip-upload" : "file archive outline icon",
         "game"   : "game icon",
+        "game-playable" : "play icon",
         "bug"    : "bug icon",
         "win"    : "smile icon",
         "lose"   : "frown icon",
@@ -21,7 +24,7 @@ var Feed = React.createClass({
                             <div className="event" key={i}>
                                 <div className="label">
                                     { feedEvent.id ? (
-                                        <i onClick={() => visualize(feedEvent.id)} className="play icon"></i>
+                                        <i onClick={() => visualize(feedEvent.id)} className={iconDict[feedEvent.type]}></i>
                                     ) : <i className={iconDict[feedEvent.type]}></i> }
                                 </div>
                                 <div className="content summary">
@@ -160,15 +163,15 @@ var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection fo
 var leaderData = [
     {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "tie", event: "Tie against Henry Hunt", time: new Date(new Date().getTime()-600000), id:123}
+        {type: "game-playable", event: "Tie against Henry Hunt", time: new Date(new Date().getTime()-600000), id:123}
     ]},
     {user: {id: 2, username: "truell20", name: "Michael Truell", school:{id: "DA", name: "Dalton"}}, rank: 2, score: 33, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "win", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000), id:456}
+        {type: "game-playable", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000), id:456}
     ]},
     {user: {id: 3, username: "flying.graysons", name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}}, rank: 3, score: 33, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "lose", event: "Lost against Henry Hunt", time: new Date(new Date().getTime()-600000), id:789}
+        {type: "game-playable", event: "Lost against Henry Hunt", time: new Date(new Date().getTime()-600000), id:789}
     ]}
 ];
 
