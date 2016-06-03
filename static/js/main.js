@@ -104,6 +104,13 @@ var feedData = [
                      {type: "game", event: "Won against Joshua Gruenstein", time: new Date(new Date().getTime()-600000)}]}
 ];
 
+var games = [
+    { id:"ST", name:"Steiner Tree", season:0 },
+    { id:"TR", name:"Tron", season:0 },
+    { id:"RM", name:"Roommate", season:0 },
+    { id:"TS", name:"Traveling Salesman", season:0 }
+];
+
 ReactDOM.render(
     <Leaderboard data={leaderData} />,
     document.getElementById('leaderBoard')
@@ -112,6 +119,66 @@ ReactDOM.render(
 ReactDOM.render(
     <Feeds data={feedData} />,
     document.getElementById('feedsBox')
+);
+
+var Sidebar = React.createClass({
+    gameList: function(games, active) {
+        var season = -1;
+        var newGames = games.map(function(game) {
+            if (game.season != season) {
+                season = game.season;
+                return (
+                    <div>
+                        <div className="ui horizontal divider inverted fitted">
+                            {"Season " + game.season}
+                        </div>
+                        <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
+                    </div>
+                );
+            } else return (
+                <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
+            );
+        });
+
+        return newGames;
+    },
+    render: function() {
+        return (
+            <div className="ui sidebar inverted vertical menu">
+                <div className="item">
+                    <div className="ui fluid category search">
+                        <div className="ui icon input fluid">
+                            <input className="prompt" type="text" placeholder="Search..." />
+                            <i className="search icon"></i>
+                        </div>
+                        <div className="results"></div>
+                    </div>
+                </div>
+                <div className="item">
+                    <div className="header">Games</div>
+                    <div className="menu">
+                        { this.gameList(this.props.games, this.props.active) }
+                    </div>
+                </div>
+                <a className={"item" + (this.props.active==="users"?" active":"")}>
+                    Users
+                </a>
+                <a className={"item" + (this.props.active==="blog"?" active":"")}>
+                    Blog
+                </a>
+                <div className="item">
+                    <div className="header">About</div>
+                    <div className="content" style={{fontSize:"0.9em",lineHeight:"1.4em"}}>NYCSL is an inter-mural programming competition for highschool students in the New York area.  Each month-ish a new problem is posted, and participants are challenged to create the optimal solution.  Challenges can be games, algorithmic problems, or something else entirely.  The top ranked students for each challenge receive prizes, and are invited to attend the NYCSL Championship at Horace Mann in the summer.</div>
+                </div>
+            </div>
+        );
+    }
+});
+
+
+ReactDOM.render(
+    <Sidebar games={games} active="ST" />,
+    document.getElementById('sidebarBox')
 );
 
 linkPopups();
