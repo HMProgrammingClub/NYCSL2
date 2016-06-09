@@ -8,18 +8,9 @@ var Sidebar = React.createClass({
          */
 
         var dummySearchContent = [
-            {
-              title: 'Traveling Salesman Problem',
-              description: 'Find the optimal route through a set of 500 points in 3D space.'
-            },
-            {
-              title: 'Tron: A Postmortem',
-              description: 'by Jake Sanders'
-            },
-            {
-              title: 'Joshua Gruenstein',
-              description: 'Horace Mann'
-            }
+            { title: 'Traveling Salesman Problem', description: 'Find the optimal route through a set of 500 points in 3D space.' },
+            { title: 'Tron: A Postmortem', description: 'by Jake Sanders' },
+            { title: 'Joshua Gruenstein', description: 'Horace Mann' }
         ];
 
         $('.ui.search').search({
@@ -79,12 +70,6 @@ var Sidebar = React.createClass({
 
 var NavBar = React.createClass({
     componentDidMount: function() {
-        $("#loginBtn").click(function(e) {
-            e.preventDefault();
-            $('.ui.modal').modal('show');
-            return false;
-        });
-
         $('#accountBtn').popup({
             popup: '.special.popup',
             hoverable: true,
@@ -93,6 +78,9 @@ var NavBar = React.createClass({
     },
     openMenu: function() {
         $('.ui.sidebar').sidebar('toggle');
+    },
+    openLoginModal: function() {
+        $('.ui.modal').modal('show');
     },
     signInModal: function() {
         return (
@@ -103,7 +91,7 @@ var NavBar = React.createClass({
                 <div className="image content">
                     <div className="description">
                         <div className="ui header">Click the button below to login with Github.</div>
-                        <p>If you don't already have an account linked to your Github profile, that's ok. We@apos;ll automatically detect it and help you get things set up.</p>
+                        <p>If you don't already have an account linked to your Github profile, that's ok. We'll automatically detect it and help you get things set up.</p>
                     </div>
                 </div>
                 <div className="actions">
@@ -168,10 +156,11 @@ var NavBar = React.createClass({
     loggedOutMenu: function() {
         return (
             <div className="right menu">
-                <a className="item" id="loginBtn">
+                <a className="item" onClick={this.openLoginModal}>
                     <i className="sign in icon"></i>
                     Login with Github
                 </a>
+                { this.signInModal() }
             </div>
         );
     },
@@ -204,6 +193,6 @@ ReactDOM.render(
 );
 
 ReactDOM.render(
-    <NavBar githubID="7736334" logState={true} />,
+    <NavBar githubID="7736334" logState={false} />,
     document.getElementById('navbarBox')
 );
