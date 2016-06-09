@@ -6,6 +6,10 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
+
     <style>
         .author { margin-top:-0.5em; }
         .date { margin-top:-0.5em; }
@@ -13,123 +17,12 @@
     </style>
 </head>
 
-<body>
+<body id="blog">
+    <div id="sidebarBox"></div>
 
-<div class="ui sidebar inverted vertical menu">
-    <div class="item">
-        <div class="ui fluid category search">
-            <div class="ui icon input fluid">
-                <input class="prompt" type="text" placeholder="Search...">
-                <i class="search icon"></i>
-            </div>
-            <div class="results"></div>
-        </div>
-    </div>
-    <div class="item">
-        <div class="header">Games</div>
-        <div class="menu">
-            <div class="ui horizontal divider inverted fitted">
-                Season 0
-            </div>
-            <a class="item">Steiner Tree</a>
-            <a class="item">Tron</a>
-            <a class="item">Roommate</a>
-            <a class="item">Traveling Salesman</a>
-        </div>
-    </div>
-    <a class="item">
-        Users
-    </a>
-    <a class="item active">
-        Blog
-    </a>
-    <div class="item">
-        <div class="header">About</div>
-        <div class="content" style=" font-size:0.9em;line-height:1.4em">NYCSL is an inter-mural programming competition for highschool students in the New York area.  Each month-ish a new problem is posted, and participants are challenged to create the optimal solution.  Challenges can be games, algorithmic problems, or something else entirely.  The top ranked students for each challenge receive prizes, and are invited to attend the NYCSL Championship at Horace Mann in the summer.</div>
-    </div>
-</div>
-
-<div class="pusher">
-    <div class="ui container">
-    <div class="ui secondary menu segment">
-        <a class="item" href="/">
-            <b>NYCSL</b>
-        </a>
-        <a class="item" id="sidebarBtn">
-            <i class="sidebar icon"></i> Menu
-        </a>
-
-        <!-- LOGGED IN MENU
-        <div class="right menu">
-            <a class="item">
-                <i class="upload icon"></i>
-                Submit
-            </a>
-            <a class="item">
-                <img class="ui mini circular image" id="accountBtn" src="https://avatars0.githubusercontent.com/u/7736334?v=3&s=460">
-            </a>
-        </div>
-        <div class="ui special popup vertical menu" style="width:110px; padding:5px 0px;">
-            <a class="item">
-                <i class="user icon"></i>
-                Profile
-            </a>
-            <a class="item">
-                <i class="sign out icon"></i>
-                Logout
-            </a>
-        </div> -->
-
-        <!-- LOGGED OUT MENU -->
-        <div class="right menu">
-            <a class="item" id="loginBtn">
-                <i class="sign in icon"></i>
-                Login with Github
-            </a>
-        </div>
-        <!-- LOGIN MENU -->
-        <div class="ui modal">
-            <div class="header">
-                Login with Github
-            </div>
-            <div class="image content">
-                <div class="description">
-                    <div class="ui header">Click the button below to login with Github.</div>
-                    <p>If you don't already have an account linked to your Github profile, that's ok. We'll automatically detect it and help you get things set up.</p>
-                </div>
-            </div>
-            <div class="actions">
-                <button class="ui button fluid">
-                    <i class="github icon"></i>
-                    Connect to Github
-                </button>
-            </div>
-        </div> <!-- -->
-        <!-- SIGNUP MENU
-        <div class="ui modal">
-            <div class="header">
-                Signup with Github
-            </div>
-            <div class="image content"><div class="description">
-                <div class="ui form">
-                    <div class="field">
-                        <label>School</label>
-                        <select class="ui fluid search dropdown selection">
-                            <option value="">Select School</option>
-                            <option value="HM">Horace Mann School</option>
-                            <option value="DA">Dalton School</option>
-                            <option value="ST">Stuyvesant</option>
-                        </select>
-                    </div>
-                </div>
-            </div></div>
-            <div class="actions">
-                <button class="ui button fluid">
-                    Create Account
-                </button>
-            </div>
-        </div> -->
-    </div>
+    <div class="pusher">
+        <div class="ui container">
+        <div id="navbarBox"></div><br />
 
     <div class="ui text container">
 
@@ -168,6 +61,8 @@
     </div>
 </div>
 
-<script src="js/general.js"></script>
+<script type="text/babel" src="js/blog.js"></script>
+<script type="text/babel" src="js/general.js"></script>
+
 </body>
 </html>

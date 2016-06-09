@@ -1,3 +1,24 @@
+function timeSince(date) {
+    var DURATION_IN_SECONDS = {
+      year:   31536000,
+      month:  2592000,
+      day:    86400,
+      hour:   3600,
+      minute: 60
+    };
+
+    function getDuration(seconds) {
+        var epoch, interval;
+        for (var i = 0; i < Object.keys(DURATION_IN_SECONDS).length; i++) {
+            epoch = Object.keys(DURATION_IN_SECONDS)[i];
+            interval = Math.floor(seconds / DURATION_IN_SECONDS[epoch]);
+            if (interval >= 1) return { interval: interval, epoch: epoch };
+        }
+    } var duration = getDuration(Math.floor((new Date() - new Date(date)) / 1000));
+    var suffix  = (duration.interval > 1 || duration.interval === 0) ? 's' : '';
+    return duration.interval + ' ' + duration.epoch + suffix;
+}
+
 var Feed = React.createClass({
     iconDict: {
         "upload" : "cloud upload icon",

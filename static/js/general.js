@@ -179,7 +179,6 @@ var NavBar = React.createClass({
     }
 });
 
-
 var games = [
     { id:"ST", name:"Steiner Tree", season:0 },
     { id:"TR", name:"Tron", season:0 },
@@ -188,7 +187,7 @@ var games = [
 ];
 
 ReactDOM.render(
-    <Sidebar games={games} active="ST" />,
+    <Sidebar games={games} active={document.body.id} />,
     document.getElementById('sidebarBox')
 );
 
