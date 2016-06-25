@@ -25,7 +25,7 @@ class UserListAPI(Resource):
 		user["isVerified"] = False
 
 		db.user.insert_one(user)
-		return {"user": user}, 201
+		return jsonify({"user": user}), 201
 
 
 class UserAPI(Resource):
@@ -42,7 +42,7 @@ class UserAPI(Resource):
 		user = db.user.find_one({"_id": ObjectId(userID)})
 		if user is None:
 			abort(404)
-		return {"user": user}
+		return jsonify({"user": user})
 
 	def put(self, userID):
 		user = db.user.find_one({"_id": ObjectId(userID)})
@@ -55,13 +55,13 @@ class UserAPI(Resource):
 				user[k] = v
 
 		db.user.update_one(user)
-		return {"user": user}
+		return jsonify({"user": user})
 
 	def delete(self, userID):
 		result = db.user.delete_one({"_id": ObjectId(userID)})
 		if result.deleted_count < 1:
 			abort(404)
-		return {"result": True}
+		return jsonify({"result": True})
 
 
 app = Flask(__name__, static_url_path="")
