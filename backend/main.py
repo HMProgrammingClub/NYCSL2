@@ -39,13 +39,13 @@ class UserAPI(Resource):
 		super(UserAPI, self).__init__()
 
 	def get(self, userID):
-		user = db.user.find_one({"id": ObjectId(userID)})
+		user = db.user.find_one({"_id": ObjectId(userID)})
 		if user is None:
 			abort(404)
 		return {"user": user}
 
 	def put(self, userID):
-		user = db.user.find_one({"id": ObjectId(userID)})
+		user = db.user.find_one({"_id": ObjectId(userID)})
 		if user is None:
 			abort(404)
 
@@ -58,7 +58,7 @@ class UserAPI(Resource):
 		return {"user": user}
 
 	def delete(self, userID):
-		result = db.user.delete_one({"id": ObjectId(userID)})
+		result = db.user.delete_one({"_id": ObjectId(userID)})
 		if result.deleted_count < 1:
 			abort(404)
 		return {"result": True}

@@ -9,7 +9,7 @@ class MongoJsonEncoder(json.JSONEncoder):
         if isinstance(obj, (datetime.datetime, datetime.date)):
             return obj.isoformat()
         elif isinstance(obj, ObjectId):
-            return unicode(obj)
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 def jsonify(*args, **kwargs):
