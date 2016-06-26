@@ -27,7 +27,8 @@ class UserListAPI(Resource):
 		user["isVerified"] = False
 
 		db.user.insert_one(user)
-		return jsonify(user), 201
+
+		return jsonify(user, status=201)
 
 
 class UserAPI(Resource):
@@ -57,12 +58,12 @@ class UserAPI(Resource):
 		if user is None:
 			abort(404)
 
-		args = parser.parse_args()
+		args = self.parser.parse_args()
 		for k, v in args.items():
 			if v is not None:
 				user[k] = v
 
-		db.user.update_one(user)
+		db.user.save(user)
 		return jsonify(user)
 
 	def delete(self, userID):

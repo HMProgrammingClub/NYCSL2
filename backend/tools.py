@@ -10,6 +10,6 @@ class MongoJsonEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
-def jsonify(*args):
+def jsonify(*args, **kwargs):
     """jsonify with support for MongoDB ObjectId"""
-    return Response(json.dumps(*args, cls=MongoJsonEncoder), mimetype='application/json')
+    return Response(json.dumps(*args, cls=MongoJsonEncoder), mimetype='application/json', **kwargs)
