@@ -10,6 +10,25 @@ app = Flask(__name__, static_url_path="")
 
 db = MongoClient().nycsl
 
+class ProblemListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("abbreviation", type=str, required=True, location="json")
+		self.parser.add_argument("isAscending", type=bool, required=True, location="json")
+		self.parser.add_argument("name", type=str, required=True, location="json")
+		self.parser.add_argument("description", type=str, required=True, location="json")
+		super(UserListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.problem.find({})])
+
+	def post(self):
+		problem = self.parser.parse_args()
+
+		db.problem.insert_one(problem)
+
+		return jsonify(problem, status=201)
+
 class UserListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
