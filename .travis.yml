@@ -6,3 +6,6 @@ python: 3.5
 install: cd backend && bash install.sh && cd ..
 
 script: cd backend && python tests.py
+
+notifications:
+  slack: frclions:812VES7Q5XzGvrcSmquYMwrF
