@@ -1,4 +1,4 @@
-from flask import Flask, abort, make_response
+from flask import Flask, abort, session, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 
 from bson.objectid import ObjectId
@@ -9,6 +9,37 @@ from pymongo import MongoClient
 app = Flask(__name__, static_url_path="")
 
 db = MongoClient().nycsl
+
+
+class LoginAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("email", type=str, required=True, location="json")
+		self.parser.add_argument("password", type=str, required=True, location="json")
+		super(LoginAPI, self).__init__()
+
+	def get(self):
+		userID = session['userID']
+		if userID is None:
+			return jsonify({"loggedIn": False})
+		return jsonify({ "loggedIn": True, "user": db.user.find_one({"_id": ObjectId(userID)}) })
+
+	def post(self):
+		if "userID" in session:
+			abort(409)
+
+		args = self.parser.parse_args()
+
+		user = db.user.find_one({"email": args["email"], "password": args["password"]})
+		if user is None:
+			abort(400)
+
+		session['userID'] = str(user["_id"])
+		return jsonify(user, status=201)
+
+	def delete(self):
+		session.pop("userID")
+		return jsonify({"result": True})
 
 class ProblemListAPI(Resource):
 	def __init__(self):
