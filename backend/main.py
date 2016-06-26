@@ -6,6 +6,8 @@ from tools import jsonify
 
 from pymongo import MongoClient
 
+app = Flask(__name__, static_url_path="")
+
 db = MongoClient().nycsl
 
 class UserListAPI(Resource):
@@ -25,7 +27,7 @@ class UserListAPI(Resource):
 		user["isVerified"] = False
 
 		db.user.insert_one(user)
-		return jsonify({"user": user}), 201
+		return jsonify(user), 201
 
 
 class UserAPI(Resource):
@@ -39,13 +41,19 @@ class UserAPI(Resource):
 		super(UserAPI, self).__init__()
 
 	def get(self, userID):
-		user = db.user.find_one({"_id": ObjectId(userID)})
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
 		if user is None:
 			abort(404)
-		return jsonify({"user": user})
+		return jsonify(user)
 
 	def put(self, userID):
-		user = db.user.find_one({"_id": ObjectId(userID)})
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
 		if user is None:
 			abort(404)
 
@@ -55,16 +63,13 @@ class UserAPI(Resource):
 				user[k] = v
 
 		db.user.update_one(user)
-		return jsonify({"user": user})
+		return jsonify(user)
 
 	def delete(self, userID):
 		result = db.user.delete_one({"_id": ObjectId(userID)})
 		if result.deleted_count < 1:
 			abort(404)
 		return jsonify({"result": True})
-
-
-app = Flask(__name__, static_url_path="")
 
 api = Api(app)
 api.add_resource(UserListAPI, '/users', endpoint='users')
