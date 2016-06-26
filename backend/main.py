@@ -117,6 +117,64 @@ class ProblemAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
+class EntryListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("problemID", type=str, required=True, location="json")
+		self.parser.add_argument("userID", type=str, required=True, location="json")
+		self.parser.add_argument("score", type=str, required=True, location="json")
+		super(EntryListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.entry.find({})])
+
+	def post(self):
+		entry = self.parser.parse_args()
+
+		db.entry.insert_one(entry)
+
+		return jsonify(entry, status=201)
+
+class EntryAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("problemID", type=str, location="json")
+		self.parser.add_argument("userID", type=str, location="json")
+		self.parser.add_argument("score", type=str, location="json")
+		super(EntryAPI, self).__init__()
+
+	def get(self, entryID):
+		try:
+			entry = db.entry.find_one({"_id": ObjectId(entryID)})
+		except:
+			abort(404)
+		if entry is None:
+			abort(404)
+		return jsonify(entry)
+
+	def put(self, entryID):
+		try:
+			entry = db.entry.find_one({"_id": ObjectId(entryID)})
+		except:
+			abort(404)
+		if entry is None:
+			abort(404)
+
+		args = self.parser.parse_args()
+		for k, v in args.items():
+			if v is not None:
+				entry[k] = v
+
+		db.entry.save(entry)
+		return jsonify(entry)
+
+	def delete(self, entryID):
+		result = db.entry.delete_one({"_id": ObjectId(entryID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
+
+
 class UserListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
@@ -190,6 +248,9 @@ api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
+
+api.add_resource(ProblemListAPI, '/entries', endpoint='entries')
+api.add_resource(ProblemAPI, '/entries/<entryID>', endpoint='entry')
 
 api.add_resource(LoginAPI, '/login', endpoint='login')
 
