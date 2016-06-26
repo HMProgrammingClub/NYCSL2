@@ -34,6 +34,40 @@ class NYCSLTestCase(unittest.TestCase):
 
 DUMMY_USER = {"email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
 
+class LoginTestCase(NYCSLTestCase):
+	def testGet(self):
+		assert json.loads(self.app.get("/login").data.decode("utf-8")) == {"loggedIn": False}
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		self.db.user.insert_one(exampleUser)
+
+		with self.app.session_transaction() as session:
+			session["userID"] = str(exampleUser["_id"])
+
+		response = json.loads(self.app.get("/login").data.decode("utf-8"))
+		assert response["loggedIn"] == True
+		assert areDicsEqual(response["user"], exampleUser)
+
+	def testPost(self):
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
+
+		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
+
+		self.db.user.insert_one(exampleUser)
+		req = self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json")
+		assert req.status_code == 201
+		assert areDicsEqual(json.loads(req.data.decode("utf-8")), exampleUser)
+		with self.app.session_transaction() as session:
+			assert session["userID"] == str(exampleUser["_id"])
+
+		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 409
+
+	def testDelete(self):
+		assert self.app.delete("/login").status_code == 404
+		with self.app.session_transaction() as session:
+			session["userID"] = str("RANDOM_PLACEHOLDER_ID")
+		assert json.loads(self.app.delete("/login").data.decode("utf-8")) == {"result": True}
+
 class UserTestCase(NYCSLTestCase):
 	def testGetAll(self):
 		assert b'[]' in self.app.get("/users").data
@@ -85,40 +119,6 @@ class UserTestCase(NYCSLTestCase):
 		self.db.user.insert_one(exampleUser)
 		self.app.delete("/users/"+str(exampleUser["_id"]))
 		assert self.db.user.find_one(exampleUser) is None
-
-class LoginTestCase(NYCSLTestCase):
-	def testGet(self):
-		assert json.loads(self.app.get("/login").data.decode("utf-8")) == {"loggedIn": False}
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		self.db.user.insert_one(exampleUser)
-
-		with self.app.session_transaction() as session:
-			session["userID"] = str(exampleUser["_id"])
-
-		response = json.loads(self.app.get("/login").data.decode("utf-8"))
-		assert response["loggedIn"] == True
-		assert areDicsEqual(response["user"], exampleUser)
-
-	def testPost(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
-
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
-
-		self.db.user.insert_one(exampleUser)
-		req = self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json")
-		assert req.status_code == 201
-		assert areDicsEqual(json.loads(req.data.decode("utf-8")), exampleUser)
-		with self.app.session_transaction() as session:
-			assert session["userID"] == str(exampleUser["_id"])
-
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 409
-
-	def testDelete(self):
-		assert self.app.delete("/login").status_code == 404
-		with self.app.session_transaction() as session:
-			session["userID"] = str("RANDOM_PLACEHOLDER_ID")
-		assert json.loads(self.app.delete("/login").data.decode("utf-8")) == {"result": True}
 
 DUMMY_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
 
