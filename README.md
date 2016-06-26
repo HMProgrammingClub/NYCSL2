@@ -1,10 +1,6 @@
 #NYCSL
 
-A monthly programming competition for high-school students in the NY area.
-
-##About the Competition
-
-NYCSL, or the New York Computer Science League, is a programming competition created for New York high schools students to compete against each-other while solving algorithmic computer science problems.
+NYCSL, or the New York Computer Science League, is an online, high school programming competition.
 
 Each month at midnight a new challenge is posted. Programmers in NYCSL have one month to upload as many solutions as they like; only the top score is shown. Solutions are instantly graded and put up on both global and school-wide leaderboards. Problems are designed such that they are suitable for programmers of all skill levels; beginners are encouraged to participate.
 
