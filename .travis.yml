@@ -3,9 +3,14 @@ sudo: true
 language: python
 python: 3.5
 
-install: cd backend && bash install.sh && cd ..
+install: 
+- cd backend
+- ./install.sh
+- cd ..
 
-script: cd backend && python tests.py
+script: 
+- cd backend
+- python3 tests.py
 
 notifications:
   slack: frclions:812VES7Q5XzGvrcSmquYMwrF
