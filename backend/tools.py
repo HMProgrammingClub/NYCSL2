@@ -5,13 +5,11 @@ from werkzeug import Response
 
 class MongoJsonEncoder(json.JSONEncoder):
     """Json encoder with support for MongoDB ObjectId"""
-    def default(self, obj):
-        if isinstance(obj, (datetime.datetime, datetime.date)):
-            return obj.isoformat()
-        elif isinstance(obj, ObjectId):
-            return str(obj)
-        return json.JSONEncoder.default(self, obj)
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
-def jsonify(*args, **kwargs):
+def jsonify(*args):
     """jsonify with support for MongoDB ObjectId"""
-    return Response(json.dumps(dict(*args, **kwargs), cls=MongoJsonEncoder), mimetype='application/json')
+    return Response(json.dumps(*args, cls=MongoJsonEncoder), mimetype='application/json')

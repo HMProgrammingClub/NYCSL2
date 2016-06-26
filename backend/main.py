@@ -18,7 +18,7 @@ class UserListAPI(Resource):
 		super(UserListAPI, self).__init__()
 
 	def get(self):
-		return {}
+		return jsonify([a for a in db.user.find({})])
 
 	def post(self):
 		user = self.parser.parse_args()
