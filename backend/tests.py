@@ -34,55 +34,6 @@ class NYCSLTestCase(unittest.TestCase):
 
 DUMMY_USER = {"email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
 
-class UserTestCase(NYCSLTestCase):
-	def testGetAll(self):
-		assert b'[]' in self.app.get("/users").data
-
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		self.db.user.insert_one(exampleUser)
-		newUser = json.loads(self.app.get("/users").data.decode("utf-8"))[0]
-		assert areDicsEqual(exampleUser, newUser)
-	def testGet(self):
-		assert self.app.get("/users/1").status_code == 404
-
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		self.db.user.insert_one(exampleUser)
-		newUser = json.loads(self.app.get("/users/"+str(exampleUser['_id'])).data.decode("utf-8"))
-		assert areDicsEqual(exampleUser, newUser)
-	def testPost(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
-
-		assert self.db.user.find_one(exampleUser) is None
-
-		req = self.app.post("/users", data=json.dumps(exampleUser), content_type="application/json")
-		assert req.status_code == 201
-
-		returnedUser = json.loads(req.data.decode("utf-8"))
-		assert "_id" in returnedUser
-		returnedUser.pop("_id")
-		assert "isVerified" in returnedUser
-		returnedUser.pop("isVerified")
-
-		assert areDicsEqual(exampleUser, returnedUser)
-		assert self.db.user.find_one(exampleUser) is not None
-	def testPut(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		self.db.user.insert_one(exampleUser)
-
-		exampleUser["name"] = "A way different name"
-		exampleUser["_id"] = str(exampleUser["_id"])
-
-		req = self.app.put("/users/"+exampleUser["_id"], data=json.dumps(exampleUser), content_type="application/json")
-		returnedUser = json.loads(req.data.decode("utf-8"))
-
-		assert areDicsEqual(returnedUser, exampleUser)
-
-	def testDelete(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
-		self.db.user.insert_one(exampleUser)
-		self.app.delete("/users/"+str(exampleUser["_id"]))
-		assert self.db.user.find_one(exampleUser) is None
-
 class LoginTestCase(NYCSLTestCase):
 	def testGet(self):
 		assert json.loads(self.app.get("/login").data.decode("utf-8")) == {"loggedIn": False}
@@ -116,6 +67,58 @@ class LoginTestCase(NYCSLTestCase):
 		with self.app.session_transaction() as session:
 			session["userID"] = str("RANDOM_PLACEHOLDER_ID")
 		assert json.loads(self.app.delete("/login").data.decode("utf-8")) == {"result": True}
+
+class UserTestCase(NYCSLTestCase):
+	def testGetAll(self):
+		assert b'[]' in self.app.get("/users").data
+
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		self.db.user.insert_one(exampleUser)
+		newUser = json.loads(self.app.get("/users").data.decode("utf-8"))[0]
+		assert areDicsEqual(exampleUser, newUser)
+	def testGet(self):
+		assert self.app.get("/users/1").status_code == 404
+
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		self.db.user.insert_one(exampleUser)
+		newUser = json.loads(self.app.get("/users/"+str(exampleUser['_id'])).data.decode("utf-8"))
+		assert areDicsEqual(exampleUser, newUser)
+	def testPost(self):
+		exampleUser = copy.deepcopy(DUMMY_USER)
+
+		assert self.db.user.find_one(exampleUser) is None
+
+		req = self.app.post("/users", data=json.dumps(exampleUser), content_type="application/json")
+		assert req.status_code == 201
+
+		returnedUser = json.loads(req.data.decode("utf-8"))
+		assert "_id" in returnedUser
+		returnedUser.pop("_id")
+		assert "isVerified" in returnedUser
+		returnedUser.pop("isVerified")
+		assert returnedUser["password"] != exampleUser["password"]
+		returnedUser.pop("password")
+		exampleUser.pop("password")
+
+		assert areDicsEqual(exampleUser, returnedUser)
+		assert self.db.user.find_one(exampleUser) is not None
+	def testPut(self):
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		self.db.user.insert_one(exampleUser)
+
+		exampleUser["name"] = "A way different name"
+		exampleUser["_id"] = str(exampleUser["_id"])
+
+		req = self.app.put("/users/"+exampleUser["_id"], data=json.dumps(exampleUser), content_type="application/json")
+		returnedUser = json.loads(req.data.decode("utf-8"))
+
+		assert areDicsEqual(returnedUser, exampleUser)
+
+	def testDelete(self):
+		exampleUser = copy.deepcopy(DUMMY_USER)
+		self.db.user.insert_one(exampleUser)
+		self.app.delete("/users/"+str(exampleUser["_id"]))
+		assert self.db.user.find_one(exampleUser) is None
 
 DUMMY_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
 

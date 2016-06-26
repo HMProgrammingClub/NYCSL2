@@ -8,11 +8,15 @@ from pymongo import MongoClient
 
 import configparser
 
+import hashlib
+from base64 import b64encode
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
 config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
+SALT = config["BACKEND"]["salt"]
 
 db = MongoClient().nycsl
 
@@ -52,6 +56,75 @@ class LoginAPI(Resource):
 
 		session.pop("userID")
 		return jsonify({"result": True})
+
+class UserListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("email", type=str, required=True, location="json")
+		self.parser.add_argument("password", type=str, required=True, location="json")
+		self.parser.add_argument("name", type=str, required=True, location="json")
+		self.parser.add_argument("school", type=str, location="json")
+		super(UserListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.user.find({})])
+
+	def post(self):
+		user = self.parser.parse_args()
+		user["isVerified"] = False
+
+		# Hash password
+		passbits = user["password"].encode('utf-8')
+		saltbits = SALT.encode('utf-8')
+		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
+
+		db.user.insert_one(user)
+
+		return jsonify(user, status=201)
+
+
+class UserAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("email", type=str, location="json")
+		self.parser.add_argument("password", type=str, location="json")
+		self.parser.add_argument("name", type=str, location="json")
+		self.parser.add_argument("school", type=str, location="json")
+		self.parser.add_argument("isVerified", type=str, location="json")
+		super(UserAPI, self).__init__()
+
+	def get(self, userID):
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
+		if user is None:
+			abort(404)
+		return jsonify(user)
+
+	def put(self, userID):
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
+		if user is None:
+			abort(404)
+
+		args = self.parser.parse_args()
+		for k, v in args.items():
+			if v is not None:
+				user[k] = v
+
+		db.user.save(user)
+		return jsonify(user)
+
+	def delete(self, userID):
+		result = db.user.delete_one({"_id": ObjectId(userID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
+
+
 
 class ProblemListAPI(Resource):
 	def __init__(self):
@@ -112,76 +185,75 @@ class ProblemAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
-class UserListAPI(Resource):
+class EntryListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		super(UserListAPI, self).__init__()
+		self.parser.add_argument("problemID", type=str, required=True, location="json")
+		self.parser.add_argument("userID", type=str, required=True, location="json")
+		self.parser.add_argument("score", type=str, required=True, location="json")
+		super(EntryListAPI, self).__init__()
 
 	def get(self):
-		return jsonify([a for a in db.user.find({})])
+		return jsonify([a for a in db.entry.find({})])
 
 	def post(self):
-		user = self.parser.parse_args()
-		user["isVerified"] = False
+		entry = self.parser.parse_args()
 
-		db.user.insert_one(user)
+		db.entry.insert_one(entry)
 
-		return jsonify(user, status=201)
+		return jsonify(entry, status=201)
 
-
-class UserAPI(Resource):
+class EntryAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, location="json")
-		self.parser.add_argument("password", type=str, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		self.parser.add_argument("isVerified", type=str, location="json")
-		super(UserAPI, self).__init__()
+		self.parser.add_argument("problemID", type=str, location="json")
+		self.parser.add_argument("userID", type=str, location="json")
+		self.parser.add_argument("score", type=str, location="json")
+		super(EntryAPI, self).__init__()
 
-	def get(self, userID):
+	def get(self, entryID):
 		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
+			entry = db.entry.find_one({"_id": ObjectId(entryID)})
 		except:
 			abort(404)
-		if user is None:
+		if entry is None:
 			abort(404)
-		return jsonify(user)
+		return jsonify(entry)
 
-	def put(self, userID):
+	def put(self, entryID):
 		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
+			entry = db.entry.find_one({"_id": ObjectId(entryID)})
 		except:
 			abort(404)
-		if user is None:
+		if entry is None:
 			abort(404)
 
 		args = self.parser.parse_args()
 		for k, v in args.items():
 			if v is not None:
-				user[k] = v
+				entry[k] = v
 
-		db.user.save(user)
-		return jsonify(user)
+		db.entry.save(entry)
+		return jsonify(entry)
 
-	def delete(self, userID):
-		result = db.user.delete_one({"_id": ObjectId(userID)})
+	def delete(self, entryID):
+		result = db.entry.delete_one({"_id": ObjectId(entryID)})
 		if result.deleted_count < 1:
 			abort(404)
 		return jsonify({"result": True})
 
 api = Api(app)
+
+api.add_resource(LoginAPI, '/login', endpoint='login')
+
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
-api.add_resource(LoginAPI, '/login', endpoint='login')
+api.add_resource(ProblemListAPI, '/entries', endpoint='entries')
+api.add_resource(ProblemAPI, '/entries/<entryID>', endpoint='entry')
 
 if __name__ == '__main__':
 	app.run(debug=True)
