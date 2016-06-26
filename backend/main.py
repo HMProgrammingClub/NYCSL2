@@ -17,7 +17,7 @@ class ProblemListAPI(Resource):
 		self.parser.add_argument("isAscending", type=bool, required=True, location="json")
 		self.parser.add_argument("name", type=str, required=True, location="json")
 		self.parser.add_argument("description", type=str, required=True, location="json")
-		super(UserListAPI, self).__init__()
+		super(ProblemListAPI, self).__init__()
 
 	def get(self):
 		return jsonify([a for a in db.problem.find({})])
@@ -28,6 +28,46 @@ class ProblemListAPI(Resource):
 		db.problem.insert_one(problem)
 
 		return jsonify(problem, status=201)
+
+class ProblemAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("abbreviation", type=str, location="json")
+		self.parser.add_argument("isAscending", type=bool, location="json")
+		self.parser.add_argument("name", type=str, location="json")
+		self.parser.add_argument("description", type=str, location="json")
+		super(ProblemAPI, self).__init__()
+
+	def get(self, problemID):
+		try:
+			problem = db.problem.find_one({"_id": ObjectId(problemID)})
+		except:
+			abort(404)
+		if problem is None:
+			abort(404)
+		return jsonify(problem)
+
+	def put(self, problemID):
+		try:
+			problem = db.problem.find_one({"_id": ObjectId(problemID)})
+		except:
+			abort(404)
+		if problem is None:
+			abort(404)
+
+		args = self.parser.parse_args()
+		for k, v in args.items():
+			if v is not None:
+				problem[k] = v
+
+		db.problem.save(problem)
+		return jsonify(problem)
+
+	def delete(self, problemID):
+		result = db.problem.delete_one({"_id": ObjectId(problemID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
 
 class UserListAPI(Resource):
 	def __init__(self):
@@ -94,6 +134,9 @@ class UserAPI(Resource):
 api = Api(app)
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
+
+api.add_resource(ProblemListAPI, '/problems/', endpoint='problems')
+api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
 if __name__ == '__main__':
 	app.run(debug=True)
