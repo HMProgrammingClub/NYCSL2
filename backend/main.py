@@ -57,6 +57,74 @@ class LoginAPI(Resource):
 		session.pop("userID")
 		return jsonify({"result": True})
 
+class UserListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("email", type=str, required=True, location="json")
+		self.parser.add_argument("password", type=str, required=True, location="json")
+		self.parser.add_argument("name", type=str, required=True, location="json")
+		self.parser.add_argument("school", type=str, location="json")
+		super(UserListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.user.find({})])
+
+	def post(self):
+		user = self.parser.parse_args()
+		user["isVerified"] = False
+
+		# Hash password
+		passbits = user["password"].encode('utf-8')
+		saltbits = SALT.encode('utf-8')
+		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
+
+		db.user.insert_one(user)
+
+		return jsonify(user, status=201)
+
+
+class UserAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("email", type=str, location="json")
+		self.parser.add_argument("password", type=str, location="json")
+		self.parser.add_argument("name", type=str, location="json")
+		self.parser.add_argument("school", type=str, location="json")
+		self.parser.add_argument("isVerified", type=str, location="json")
+		super(UserAPI, self).__init__()
+
+	def get(self, userID):
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
+		if user is None:
+			abort(404)
+		return jsonify(user)
+
+	def put(self, userID):
+		try:
+			user = db.user.find_one({"_id": ObjectId(userID)})
+		except:
+			abort(404)
+		if user is None:
+			abort(404)
+
+		args = self.parser.parse_args()
+		for k, v in args.items():
+			if v is not None:
+				user[k] = v
+
+		db.user.save(user)
+		return jsonify(user)
+
+	def delete(self, userID):
+		result = db.user.delete_one({"_id": ObjectId(userID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
+
+
 
 class ProblemListAPI(Resource):
 	def __init__(self):
@@ -174,75 +242,10 @@ class EntryAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
-
-class UserListAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		super(UserListAPI, self).__init__()
-
-	def get(self):
-		return jsonify([a for a in db.user.find({})])
-
-	def post(self):
-		user = self.parser.parse_args()
-		user["isVerified"] = False
-
-		# Hash password
-		passbits = user["password"].encode('utf-8')
-		saltbits = SALT.encode('utf-8')
-		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
-
-		db.user.insert_one(user)
-
-		return jsonify(user, status=201)
-
-
-class UserAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, location="json")
-		self.parser.add_argument("password", type=str, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		self.parser.add_argument("isVerified", type=str, location="json")
-		super(UserAPI, self).__init__()
-
-	def get(self, userID):
-		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
-		except:
-			abort(404)
-		if user is None:
-			abort(404)
-		return jsonify(user)
-
-	def put(self, userID):
-		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
-		except:
-			abort(404)
-		if user is None:
-			abort(404)
-
-		args = self.parser.parse_args()
-		for k, v in args.items():
-			if v is not None:
-				user[k] = v
-
-		db.user.save(user)
-		return jsonify(user)
-
-	def delete(self, userID):
-		result = db.user.delete_one({"_id": ObjectId(userID)})
-		if result.deleted_count < 1:
-			abort(404)
-		return jsonify({"result": True})
-
 api = Api(app)
+
+api.add_resource(LoginAPI, '/login', endpoint='login')
+
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
@@ -251,8 +254,6 @@ api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
 api.add_resource(ProblemListAPI, '/entries', endpoint='entries')
 api.add_resource(ProblemAPI, '/entries/<entryID>', endpoint='entry')
-
-api.add_resource(LoginAPI, '/login', endpoint='login')
 
 if __name__ == '__main__':
 	app.run(debug=True)
