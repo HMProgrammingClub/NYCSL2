@@ -6,7 +6,13 @@ from tools import jsonify
 
 from pymongo import MongoClient
 
+import configparser
+
 app = Flask(__name__, static_url_path="")
+
+config = configparser.ConfigParser()
+config.read("../nycsl.ini")
+app.secret_key = config["BACKEND"]["secretKey"]
 
 db = MongoClient().nycsl
 
@@ -19,17 +25,20 @@ class LoginAPI(Resource):
 		super(LoginAPI, self).__init__()
 
 	def get(self):
-		userID = session['userID']
-		if userID is None:
+		if "userID" not in session:
 			return jsonify({"loggedIn": False})
-		return jsonify({ "loggedIn": True, "user": db.user.find_one({"_id": ObjectId(userID)}) })
+
+		user = db.user.find_one({"_id": ObjectId(session["userID"])})
+		if user is None:
+			session.pop("userID")
+			return jsonify({"loggedIn": False})
+		return jsonify({ "loggedIn": True, "user": user })
 
 	def post(self):
 		if "userID" in session:
 			abort(409)
 
 		args = self.parser.parse_args()
-
 		user = db.user.find_one({"email": args["email"], "password": args["password"]})
 		if user is None:
 			abort(400)
@@ -38,6 +47,9 @@ class LoginAPI(Resource):
 		return jsonify(user, status=201)
 
 	def delete(self):
+		if "userID" not in session:
+			abort(404)
+
 		session.pop("userID")
 		return jsonify({"result": True})
 
@@ -168,6 +180,8 @@ api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
+
+api.add_resource(LoginAPI, '/login', endpoint='login')
 
 if __name__ == '__main__':
 	app.run(debug=True)
