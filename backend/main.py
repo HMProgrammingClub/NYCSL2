@@ -8,11 +8,15 @@ from pymongo import MongoClient
 
 import configparser
 
+import hashlib
+from base64 import b64encode
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
 config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
+SALT = config["BACKEND"]["salt"]
 
 db = MongoClient().nycsl
 
@@ -52,6 +56,7 @@ class LoginAPI(Resource):
 
 		session.pop("userID")
 		return jsonify({"result": True})
+
 
 class ProblemListAPI(Resource):
 	def __init__(self):
@@ -112,6 +117,66 @@ class ProblemAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
+class SubmissionListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("abbreviation", type=str, required=True, location="json")
+		self.parser.add_argument("isAscending", type=bool, required=True, location="json")
+		self.parser.add_argument("name", type=str, required=True, location="json")
+		self.parser.add_argument("description", type=str, required=True, location="json")
+		super(ProblemListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.problem.find({})])
+
+	def post(self):
+		problem = self.parser.parse_args()
+
+		db.problem.insert_one(problem)
+
+		return jsonify(problem, status=201)
+
+class SubmissionAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("abbreviation", type=str, location="json")
+		self.parser.add_argument("isAscending", type=bool, location="json")
+		self.parser.add_argument("name", type=str, location="json")
+		self.parser.add_argument("description", type=str, location="json")
+		super(ProblemAPI, self).__init__()
+
+	def get(self, problemID):
+		try:
+			problem = db.problem.find_one({"_id": ObjectId(problemID)})
+		except:
+			abort(404)
+		if problem is None:
+			abort(404)
+		return jsonify(problem)
+
+	def put(self, problemID):
+		try:
+			problem = db.problem.find_one({"_id": ObjectId(problemID)})
+		except:
+			abort(404)
+		if problem is None:
+			abort(404)
+
+		args = self.parser.parse_args()
+		for k, v in args.items():
+			if v is not None:
+				problem[k] = v
+
+		db.problem.save(problem)
+		return jsonify(problem)
+
+	def delete(self, problemID):
+		result = db.problem.delete_one({"_id": ObjectId(problemID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
+
+
 class UserListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
@@ -127,6 +192,11 @@ class UserListAPI(Resource):
 	def post(self):
 		user = self.parser.parse_args()
 		user["isVerified"] = False
+
+		# Hash password
+		passbits = user["password"].encode('utf-8')
+		saltbits = SALT.encode('utf-8')
+		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
 
 		db.user.insert_one(user)
 

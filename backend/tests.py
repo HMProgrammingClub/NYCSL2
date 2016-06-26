@@ -62,6 +62,9 @@ class UserTestCase(NYCSLTestCase):
 		returnedUser.pop("_id")
 		assert "isVerified" in returnedUser
 		returnedUser.pop("isVerified")
+		assert returnedUser["password"] != exampleUser["password"]
+		returnedUser.pop("password")
+		exampleUser.pop("password")
 
 		assert areDicsEqual(exampleUser, returnedUser)
 		assert self.db.user.find_one(exampleUser) is not None
