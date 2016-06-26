@@ -135,7 +135,7 @@ api = Api(app)
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
-api.add_resource(ProblemListAPI, '/problems/', endpoint='problems')
+api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
 if __name__ == '__main__':

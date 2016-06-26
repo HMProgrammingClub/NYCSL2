@@ -82,5 +82,54 @@ class UserTestCase(NYCSLTestCase):
 		self.app.delete("/users/"+str(exampleUser["_id"]))
 		assert self.db.user.find_one(exampleUser) is None
 
+DUMMY_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
+
+class ProblemTestCase(NYCSLTestCase):
+	def testGetAll(self):
+		assert b'[]' in self.app.get("/problems").data
+
+		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		self.db.problem.insert_one(exampleProblem)
+		newProblem = json.loads(self.app.get("/problems").data.decode("utf-8"))[0]
+		assert areDicsEqual(exampleProblem, newProblem)
+	def testGet(self):
+		assert self.app.get("/problems/1").status_code == 404
+
+		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		self.db.problem.insert_one(exampleProblem)
+		newProblem = json.loads(self.app.get("/problems/"+str(exampleProblem['_id'])).data.decode("utf-8"))
+		assert areDicsEqual(exampleProblem, newProblem)
+	def testPost(self):
+		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+
+		assert self.db.problem.find_one(exampleProblem) is None
+
+		req = self.app.post("/problems", data=json.dumps(exampleProblem), content_type="application/json")
+		assert req.status_code == 201
+
+		returnedProblem = json.loads(req.data.decode("utf-8"))
+		assert "_id" in returnedProblem
+		returnedProblem.pop("_id")
+
+		assert areDicsEqual(exampleProblem, returnedProblem)
+		assert self.db.problem.find_one(exampleProblem) is not None
+	def testPut(self):
+		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		self.db.problem.insert_one(exampleProblem)
+
+		exampleProblem["name"] = "A way different name"
+		exampleProblem["_id"] = str(exampleProblem["_id"])
+
+		req = self.app.put("/problems/"+exampleProblem["_id"], data=json.dumps(exampleProblem), content_type="application/json")
+		returnedProblem = json.loads(req.data.decode("utf-8"))
+
+		assert areDicsEqual(returnedProblem, exampleProblem)
+
+	def testDelete(self):
+		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		self.db.problem.insert_one(exampleProblem)
+		self.app.delete("/problems/"+str(exampleProblem["_id"]))
+		assert self.db.problem.find_one(exampleProblem) is None
+
 if __name__ == '__main__':
 	unittest.main()
