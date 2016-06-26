@@ -57,7 +57,9 @@ class UserTestCase(NYCSLTestCase):
 		assert req.status_code == 201
 
 		returnedUser = json.loads(req.data.decode("utf-8"))
+		assert "_id" in returnedUser
 		returnedUser.pop("_id")
+		assert "isVerified" in returnedUser
 		returnedUser.pop("isVerified")
 
 		assert areDicsEqual(exampleUser, returnedUser)
