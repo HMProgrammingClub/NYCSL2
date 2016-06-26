@@ -270,3 +270,5 @@ nohub.out
 *.exe
 
 gitpull.php
+
+nycsl.ini
