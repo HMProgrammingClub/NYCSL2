@@ -7,10 +7,14 @@ public class Piece {
 
     // The matrix representing the piece in its current orientation.
     // This matrix can be a different size depending on the piece.
-    boolean[][] matrix;
+    public boolean[][] matrix;
+
+    // The keycode of the piece.
+    public char type;
 
     // Construct a piece from the key, aka IJLOSTZ.
     public Piece(char key) {
+        type = key;
         switch (key) {
             case 'I': matrix = PIECES.I;
                       break;
@@ -27,7 +31,7 @@ public class Piece {
             case 'T': matrix = PIECES.T;
                       break;
             default : throw new RuntimeException("Invalid piece initialization character.");
-        } rotation = 0;
+        } rotation = x = y = 0; // intialize piece to orientation 0 at top left
     }
 
     // Rotate the piece 90 degrees clockwise.
