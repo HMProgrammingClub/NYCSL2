@@ -68,7 +68,6 @@ public class Board {
             moving.y -= 1;
             settled = superimpose(moving,settled);
             moving = null;
-            System.out.println(moves.length() + ") LANDED");
         }
 
         return tetris();
@@ -114,5 +113,31 @@ public class Board {
                 lines += 1; r += 1;
             }
         } return Math.round((float)Math.pow(1.189207115f,lines)*100*lines);
+    }
+
+    // Render the board as ASCII art, where Os represent settled blocks
+    // and Xs represent blocks in active pieces. Good for printing and
+    // debugging.
+    public String toString() {
+        if (moving == null) moving = queue.remove();
+        char[][] newMap = new char[settled.length][settled[0].length];
+        for (int r=0; r<settled.length; r++) for (int c=0; c<settled[0].length; c++)
+            newMap[r][c] = settled[r][c]?'O':' ';
+        for (int c=moving.x; c<moving.x+moving.matrix.length; c++) {
+            for (int r=moving.y; r<moving.y+moving.matrix.length; r++) {
+                if (c >= 0 && c < BOARD_WIDTH && r >=0 && r < BOARD_HEIGHT) {
+                    if (!settled[r][c] && moving.matrix[r-moving.y][c-moving.x]) newMap[r][c] = 'X';
+                }
+            }
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (char[] row : newMap) {
+            builder.append('|');
+            for (char i : row) builder.append(i);
+            builder.append('|');
+            builder.append('\n');
+        } for (int i=0; i<BOARD_WIDTH+2; i++) builder.append('-');
+        return builder.toString();
     }
 }
