@@ -1,4 +1,7 @@
 import java.util.LinkedList;
+import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
 
 public class Board {
     // Constants for board width and height
@@ -11,7 +14,7 @@ public class Board {
     // current ratio at any time is 1:(1+floor(MOVES_TO_FASTEST/moves so far))
     public static final int MOVES_TO_FASTEST = 100;
 
-    // The matrix of occupied spaces on the board, made up of settled pieces.
+    // The 10x20 matrix of occupied spaces on the board, made up of settled pieces.
     public boolean[][] settled;
 
     // The piece currently being manipulated, not yet settled.
@@ -25,7 +28,7 @@ public class Board {
     // the NYCSL website for scoring.
     public String moves;
 
-    // Initialize the 10x20 game board.
+    // Initialize the game board from a string of pieces.
     public Board(String piecesString) {
         moves = new String();
         queue = new LinkedList<Piece>();
@@ -58,9 +61,9 @@ public class Board {
         moving.y += 1;
 
         boolean hitBottom = false;
-        for (int r=moving.y+moving.matrix.length-BOARD_HEIGHT; r>0; r--) {
+        for (int r=moving.y+moving.matrix.length-BOARD_HEIGHT-1; r>=0; r--) {
             for (int i=0; i<moving.matrix.length; i++) {
-                if (moving.matrix[r][i]) hitBottom = true;
+                if (moving.matrix[moving.matrix.length-r-1][i]) hitBottom = true;
             }
         }
 
