@@ -1,7 +1,10 @@
 import java.util.LinkedList;
+
 import java.util.Scanner;
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class Board {
     // Constants for board width and height
@@ -120,6 +123,17 @@ public class Board {
                 lines += 1; r += 1;
             }
         } return Math.round((float)Math.pow(1.189207115f,lines)*100*lines);
+    }
+
+    // Output the taken moves to a text file with the given file name, ex: output.txt.
+    public void outputMovesToFile(String filename) {
+        try {
+            PrintWriter out = new PrintWriter(filename);
+            out.println(moves);
+            out.close();
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
     }
 
     // Render the board as ASCII art, where Os represent settled blocks
