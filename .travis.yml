@@ -10,7 +10,7 @@ install:
 
 script:
 - cd backend
-- python3 tests.py
+- ./runTests.sh
 
 notifications:
   slack: frclions:812VES7Q5XzGvrcSmquYMwrF
