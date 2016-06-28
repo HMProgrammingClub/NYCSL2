@@ -122,12 +122,10 @@ class Board:
             pass
         else: raise RuntimeError('Invalid move character.')
 
-        """
         if self.checkOutOfBounds(self.moving):
             raise RuntimeError('Piece went out of bounds.')
         if self.superimpose(self.moving,self.settled) == None:
             raise RuntimeError('Piece collided with another piece.')
-        """
 
         self.moving.y += 1
 
