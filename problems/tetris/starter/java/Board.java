@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Board {
     // Constants for board width and height
     public static final int BOARD_WIDTH = 10;
-    public static final int BOARD_HEIGHT = 10;
+    public static final int BOARD_HEIGHT = 20;
 
     // The 10x20 matrix of occupied spaces on the board, made up of settled pieces.
     public boolean[][] settled;
