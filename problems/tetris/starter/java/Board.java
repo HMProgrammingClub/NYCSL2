@@ -28,6 +28,16 @@ public class Board {
     // the NYCSL website for scoring.
     public String moves;
 
+    // Initialize the game board from "input.txt" file.
+    public Board() throws IOException {
+        this(new File("input.txt"));
+    }
+
+    // Initialize the game board from a FileReader object.
+    public Board(File file) throws IOException {
+        this(new Scanner(file).nextLine());
+    }
+
     // Initialize the game board from a string of pieces.
     public Board(String piecesString) {
         moves = new String();
