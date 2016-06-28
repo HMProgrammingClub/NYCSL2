@@ -76,3 +76,34 @@ class Piece:
                 outstring += 'X' if val else 'O'
             outstring += '\n'
         return outstring
+
+
+class Board:
+    # Constants for board width and height
+    BOARD_WIDTH = 10
+    BOARD_HEIGHT = 20
+
+    def __init__(self, filename='input.txt'):
+        # The 10x20 matrix of occupied spaces on the board, made up of settled pieces.
+        self.settled = [[False for x in range(self.BOARD_WIDTH)] for y in range(self.BOARD_HEIGHT)]
+
+        # The piece currently being manipulated, not yet settled.
+        self.moving = None
+
+        # The queue of pieces waiting to be put into loading.
+        self.queue = []
+
+        # The character list (or string) representing the moves made throughout
+        # the game.  This string (when written to a file) is what is graded by
+        # the NYCSL website for scoring.
+        self.moves = ''
+
+        with open(filename, 'r') as infile:
+            data = infile.read().replace('\n', '')
+
+        for char in data:
+            self.queue.append(Piece(char))
+
+
+x = Board()
+print x.queue[0]
