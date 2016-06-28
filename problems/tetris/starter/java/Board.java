@@ -8,12 +8,6 @@ public class Board {
     public static final int BOARD_WIDTH = 10;
     public static final int BOARD_HEIGHT = 10;
 
-    // Constant for the number of moves until a 1:1 ratio between moves and
-    // drops.  In other words, after MOVES_TO_FASTEST moves the pieces will
-    // lower every move, the fastest vertical speed they will acheive.  The
-    // current ratio at any time is 1:(1+floor(MOVES_TO_FASTEST/moves so far))
-    public static final int MOVES_TO_FASTEST = 100;
-
     // The 10x20 matrix of occupied spaces on the board, made up of settled pieces.
     public boolean[][] settled;
 
