@@ -85,7 +85,7 @@ public class Board {
 
     // Attempt to superimpose the piece on the given map. Return null
     // if they overlap, otherwise return the new map.
-    private static boolean[][] superimpose(Piece piece, boolean[][] map) {
+    public static boolean[][] superimpose(Piece piece, boolean[][] map) {
         boolean[][] newMap = new boolean[map.length][map[0].length];
         for (int i=0; i<map.length; i++) newMap[i] = map[i].clone();
         for (int c=piece.x; c<piece.x+piece.matrix.length; c++) {
@@ -99,7 +99,7 @@ public class Board {
     }
 
     // Return whether the piece is out of bounds.
-    private static boolean checkOutOfBounds(Piece piece) {
+    public static boolean checkOutOfBounds(Piece piece) {
         for (int c=0; c<-piece.x; c++) {
             for (int i=0; i<piece.matrix.length; i++) {
                 if (piece.matrix[i][c]) return true;
