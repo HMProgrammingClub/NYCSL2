@@ -1,7 +1,7 @@
 var QualifiedLeaderboard = React.createClass({
     render: function() {
         return (
-            <table className="ui very basic celled table fluid">
+            <table className="ui very basic celled table fluid unstackable">
                 <thead><tr>
                     <th>Student</th>
                     <th>Composite Score</th>
@@ -81,7 +81,7 @@ var UserGrid = React.createClass({
         });
 
         return (
-            <div> { this.schoolSelect() }
+            <div> { this.schoolSelect() } <br />
             <div className="ui four column doubling grid">
                 {students.map(function(student) {
                     return (
@@ -93,7 +93,7 @@ var UserGrid = React.createClass({
                             <div className="content">
                                 <div className="header">{ student.name }</div>
                                 <div className="meta">
-                                    <a onClick={this.filterSchool(student.school)}>{student.school.name}</a>
+                                    { student.school.name }
                                 </div>
                             </div>
                             </div>
@@ -106,17 +106,17 @@ var UserGrid = React.createClass({
     }
 });
 
-UserData = [
-    { id: 3, githubID: 7736334, name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann" }, compositeScore: 22},
-    { id: 4, githubID: 2452433, name: "Joshua Gruenstein", school:{id: "DA", name: "Dalton" }, compositeScore: 32}
-]
+var UserData = [
+    { id: 3, githubID: 7736334, name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}, compositeScore: 22},
+    { id: 4, githubID: 2452433, name: "Joshua Gruenstein", school:{id: "DA", name: "Dalton"}, compositeScore: 32}
+];
 
 // render first n elements (or all with nonzero score) of the same data
 // i think it makes sense caus it lowers the number of requests
 // ex:
 
-QualifiedData = UserData.map(function(user) {
-    return compositeScore != 0;
+var QualifiedData = UserData.filter(function(user) {
+    return user.compositeScore != 0;
 });
 
 ReactDOM.render(
