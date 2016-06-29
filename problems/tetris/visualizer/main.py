@@ -5,9 +5,7 @@ from threading import Thread
 from time import sleep
 
 from Tetris import *
-from Tkinter import *
-from tkFileDialog import askopenfilename
-import tkMessageBox
+from tkinter import *
 
 movesString = None
 piecesString = None
@@ -83,9 +81,9 @@ def loadMovesFile():
     global piecesString
     global status
 
-    filename = askopenfilename()
+    filename = filedialog.askopenfilename()
     if not filename.endswith('.txt'):
-        tkMessageBox.showinfo("Visualizer error", "Filetype must be a .txt")
+        messagebox.showinfo("Visualizer error", "Filetype must be a .txt")
     else:
         with open(filename, 'r') as infile:
             movesString = infile.read().replace('\n', '')
@@ -103,7 +101,7 @@ def loadPiecesFile():
 
     filename = askopenfilename()
     if not filename.endswith('.txt'):
-        tkMessageBox.showinfo("Visualizer error", "Filetype must be a .txt")
+        messagebox.showinfo("Visualizer error", "Filetype must be a .txt")
     else:
         with open(filename, 'r') as infile:
             piecesString = infile.read().replace('\n', '')
