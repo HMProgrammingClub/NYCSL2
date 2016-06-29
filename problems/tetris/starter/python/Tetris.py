@@ -83,7 +83,7 @@ class Board:
     BOARD_WIDTH = 10
     BOARD_HEIGHT = 20
 
-    def __init__(self, filename='input.txt'):
+    def __init__(self, filename='input.txt', data='oopsie'):
         # The 10x20 matrix of occupied spaces on the board, made up of settled pieces.
         self.settled = [[False for x in range(self.BOARD_WIDTH)] for y in range(self.BOARD_HEIGHT)]
 
@@ -98,10 +98,11 @@ class Board:
         # the NYCSL website for scoring.
         self.moves = ''
 
-        with open(filename, 'r') as infile:
-            data = infile.read().replace('\n', '')
-
-        for char in data:
+        if data == 'oopsie':
+            with open(filename, 'r') as infile:
+                newData = infile.read().replace('\n', '')
+        else: newData = data
+        for char in newData:
             self.queue.append(Piece(char))
 
     # Perform a move on the current piece, stepping forwards a turn in time. A
@@ -146,7 +147,7 @@ class Board:
             for i in range(len(piece.matrix)):
                 if (piece.matrix[i][c]): return True
 
-        for c in range(piece.x+piece.matrix.length-self.BOARD_WIDTH,0,-1):
+        for c in range(piece.x+len(piece.matrix)-self.BOARD_WIDTH,0,-1):
             for i in range(len(piece.matrix)):
                 if (piece.matrix[i][c]): return True
 
