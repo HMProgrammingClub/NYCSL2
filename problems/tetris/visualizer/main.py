@@ -6,6 +6,8 @@ from time import sleep
 
 from Tetris import *
 from tkinter import *
+from tkinter import filedialog
+from tkinter import messagebox
 
 movesString = None
 piecesString = None
@@ -22,7 +24,7 @@ def playFrames():
 
     isRunning = True
 
-    for i in xrange(len(frames)):
+    for i in range(len(frames)):
         if not isRunning: return
         frame.set(i)
         visualizeFrame()
@@ -69,10 +71,10 @@ def visualizeFrame():
 
     lines = [s[1:-1] for s in (frames[frame.get()][0].splitlines())[:-1]]
 
-    for y in xrange(len(lines)):
-        for x in xrange(len(lines[0])):
+    for y in range(len(lines)):
+        for x in range(len(lines[0])):
             BOX_SIZE = 30
-            charToColor = {' ': '#000', 'X': "#0F0", '0': '#FFF'}
+            charToColor = {' ': '#000', 'X': "#0F0", 'O': '#FFF'}
             color = charToColor[lines[y][x]]
             canvas.create_polygon(x*BOX_SIZE,y*BOX_SIZE,x*BOX_SIZE+BOX_SIZE,y*BOX_SIZE,x*BOX_SIZE+BOX_SIZE,y*BOX_SIZE+BOX_SIZE,x*BOX_SIZE,y*BOX_SIZE+BOX_SIZE,fill=color)
 
@@ -99,7 +101,7 @@ def loadPiecesFile():
     global piecesString
     global status
 
-    filename = askopenfilename()
+    filename = filedialog.askopenfilename()
     if not filename.endswith('.txt'):
         messagebox.showinfo("Visualizer error", "Filetype must be a .txt")
     else:
