@@ -161,8 +161,9 @@ class Board {
                 }
                 moving = queue.front();
                 queue.pop();
-                moves += moveKey;
             }
+
+            moves += moveKey;
 
             switch(moveKey) {
                 case 'L': moving.x -= 1;
@@ -223,7 +224,11 @@ class Board {
 
         // Output the taken moves to a text file with the given file name, ex: output.txt.
         void outputMovesToFile(std::string filename) {
-            std::cout << moves << std::endl; // fix for filename
+            std::ofstream ofile (filename, std::ios::out);
+            if(ofile.is_open()) {
+                ofile << moves;
+                ofile.close();
+            }
         }
 
         // Render the board as ASCII art, where Os represent settled blocks
