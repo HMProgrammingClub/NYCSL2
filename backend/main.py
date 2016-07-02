@@ -8,7 +8,7 @@ from pymongo import MongoClient
 
 import configparser
 
-import hashlib
+from hashlib import pbkdf2_hmac
 from base64 import b64encode
 
 app = Flask(__name__, static_url_path="")
@@ -76,7 +76,7 @@ class UserListAPI(Resource):
 		# Hash password
 		passbits = user["password"].encode('utf-8')
 		saltbits = SALT.encode('utf-8')
-		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
+		user["password"] = b64encode(pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
 
 		db.user.insert_one(user)
 
