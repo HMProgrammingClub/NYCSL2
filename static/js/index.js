@@ -171,6 +171,7 @@ var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection fo
     {url:"/blog/steiner-tree-tutorial",txt:"Tutorials"}
 ]}
 
+/* Temporary data now in the test.json file
 var leaderData = [
     {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44, events:[
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
@@ -184,12 +185,14 @@ var leaderData = [
         {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
         {type: "game-playable", event: "Lost against Henry Hunt", time: new Date(new Date().getTime()-600000), id:789}
     ]}
-];
+]; */
 
-ReactDOM.render(
-    <Leaderboard data={leaderData} />,
-    document.getElementById('leaderBoard')
-);
+$.get('/test.json', function (result) {
+	ReactDOM.render(
+	    <Leaderboard data={result} />,
+	    document.getElementById('leaderBoard')
+	);
+});
 
 ReactDOM.render(
     <Jumbo game={jumboData.game} desc={jumboData.desc} links={jumboData.links} />,

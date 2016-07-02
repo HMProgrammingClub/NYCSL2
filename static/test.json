@@ -1,0 +1,13 @@
+[{"user": {"id": 1, "username": "joshuagruenstein", "name": "Joshua Gruenstein", "school":{"id": "HM", "name": "Horace Mann"}}, "rank": 1, "score": 44, "events":[
+	{"type": "upload", "event": "New bot uploaded", "time":"2016-07-02T18:01:27.113Z"},
+	{"type": "game-playable", "event": "Tie against Henry Hunt", "time": "2016-07-02T18:01:27.113Z", "id":123}
+]},
+{"user": {"id": 2, "username": "truell20", "name": "Michael Truell", "school":{"id": "DA", "name": "Dalton"}}, "rank": 2, "score": 33, "events":[
+	{"type": "upload", "event": "New bot uploaded", "time": "2016-07-02T18:01:27.113Z"},
+	{"type": "game-playable", "event": "Won against Henry Hunt", "time": "2016-07-02T18:01:27.113Z", "id":456}
+]},
+{"user": {"id": 3, "username": "flying.graysons", "name": "Henry Wildermuth", "school":{"id": "HM", "name": "Horace Mann"}}, "rank": 3, "score": 33, "events":[
+	{"type": "upload", "event": "New bot uploaded", "time": "2016-07-02T18:01:27.113Z"},
+	{"type": "game-playable", "event": "Lost against Henry Hunt", "time": "2016-07-02T18:01:27.113Z", "id":789}
+]}
+]
