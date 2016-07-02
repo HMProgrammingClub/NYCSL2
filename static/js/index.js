@@ -166,35 +166,16 @@ var Jumbo = React.createClass({
     }
 });
 
-var jumboData = {game:"Steiner Tree", desc:"Find the shortest interconnection for a given set of points.", links:[
-    {url:"/blog/steiner-tree",txt:"Learn More"},
-    {url:"/blog/steiner-tree-tutorial",txt:"Tutorials"}
-]}
-
-/* Temporary data now in the test.json file
-var leaderData = [
-    {user: {id: 1, username: "joshuagruenstein", name: "Joshua Gruenstein", school:{id: "HM", name: "Horace Mann"}}, rank: 1, score: 44, events:[
-        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game-playable", event: "Tie against Henry Hunt", time: new Date(new Date().getTime()-600000), id:123}
-    ]},
-    {user: {id: 2, username: "truell20", name: "Michael Truell", school:{id: "DA", name: "Dalton"}}, rank: 2, score: 33, events:[
-        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game-playable", event: "Won against Henry Hunt", time: new Date(new Date().getTime()-600000), id:456}
-    ]},
-    {user: {id: 3, username: "flying.graysons", name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}}, rank: 3, score: 33, events:[
-        {type: "upload", event: "New bot uploaded", time: new Date(new Date().getTime()-300000)},
-        {type: "game-playable", event: "Lost against Henry Hunt", time: new Date(new Date().getTime()-600000), id:789}
-    ]}
-]; */
-
-$.get('/test.json', function (result) {
+$.get('/tempData/leaderboard.json', function (result) {
 	ReactDOM.render(
 	    <Leaderboard data={result} />,
 	    document.getElementById('leaderBoard')
 	);
 });
 
-ReactDOM.render(
-    <Jumbo game={jumboData.game} desc={jumboData.desc} links={jumboData.links} />,
-    document.getElementById('jumboBox')
-);
+$.get('/tempData/jumbodata.json', function (result) {
+	ReactDOM.render(
+    	<Jumbo game={result.game} desc={result.desc} links={result.links} />,
+    	document.getElementById('jumboBox')
+	);
+});
