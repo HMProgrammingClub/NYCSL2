@@ -1,0 +1,6 @@
+[
+    { "id":"ST", "name":"Steiner Tree", "season":0 },
+    { "id":"TR", "name":"Tron", "season":0 },
+    { "id":"RM", "name":"Roommate", "season":0 },
+    { "id":"TS", "name":"Traveling Salesman", "season":0 }
+]
