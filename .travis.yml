@@ -4,11 +4,14 @@ language: python
 python: 3.5
 
 install:
-- cd backend
+- cd ~/build/HMProgrammingClub/NYCSL2/backend
 - ./install.sh
-- cd ..
 
 script:
+- cd ~/build/HMProgrammingClub/NYCSL2/
+- echo "[BACKEND]" >> nycsl.ini
+- echo "secretKey = random_secret_key" >> nycsl.ini
+- echo "salt = random_salt" >> nycsl.ini
 - cd backend
 - ./runTests.sh
 
