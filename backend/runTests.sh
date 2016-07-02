@@ -1,2 +1,2 @@
 sudo mongod &
-sudo python tests.py
+sudo python3 tests.py
