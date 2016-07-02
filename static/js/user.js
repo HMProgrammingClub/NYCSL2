@@ -73,31 +73,14 @@ var UserTables = React.createClass({
     }
 });
 
+$.get('/tempData/dummyuser.json', function (result) {
+    ReactDOM.render(
+        <UserProfile student={result} />,
+        document.getElementById('userBox')
+    );
 
-var dummyStudent = {
-    id: 3, githubID: 7736334, name: "Henry Wildermuth",
-    school:{id: "HM", name: "Horace Mann"}, compositeScore: 22,
-    username: "FlyingGraysons", joinDate: "2015-03-25", history: {
-        "Season 0": [
-            { problem: "Steiner Tree", key: "steiner-tree", score: 4387, rank: "3/12", schoolRank: "3/12" },
-            { problem: "Tron", key: "tron", score: 42, rank: "5/31", schoolRank: "3/8" },
-            { problem: "Roommate Problem", key: "roommate", score: 6430, rank: "5/20", schoolRank: "2/5" },
-            { problem: "Traveling Salesman Problem", key: "traveling-salesman", score: 583920, rank: "3/12", schoolRank: "1/3" }
-        ],
-        "Season 1": [
-            { problem: "Robot Localization", key: "localization", score: 18, rank: "1/42", schoolRank: "1/12" },
-            { problem: "Cryptography", key: "roommate", score: 28, rank: "2/61", schoolRank: "1/10" },
-            { problem: "Turing Test", key: "turing-test", score: 60, rank: "4/67", schoolRank: "2/11" }
-        ]
-    }
-}
-
-ReactDOM.render(
-    <UserProfile student={dummyStudent} />,
-    document.getElementById('userBox')
-);
-
-ReactDOM.render(
-    <UserTables seasons={dummyStudent.history} />,
-    document.getElementById('seasonsBox')
-);
+    ReactDOM.render(
+        <UserTables seasons={result.history} />,
+        document.getElementById('seasonsBox')
+    );
+});
