@@ -9,7 +9,9 @@ install:
 
 script:
 - cd ~/build/HMProgrammingClub/NYCSL2/
-- echo "[BACKEND]\nsecretKey = random_secret_key\nsalt = random_salt" | tee nycsl.ini
+- echo "[BACKEND]" >> nycsl.ini
+- echo "secretKey = random_secret_key" >> nycsl.ini
+- echo "salt = random_salt" >> nycsl.ini
 - cd backend
 - ./runTests.sh
 
