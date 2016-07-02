@@ -1,0 +1,4 @@
+[
+    { "id": 3, "githubID": 7736334, "name": "Henry Wildermuth", "school":{"id": "HM", "name": "Horace Mann"}, "compositeScore": 22},
+    { "id": 4, "githubID": 2452433, "name": "Joshua Gruenstein", "school":{"id": "DA", "name": "Dalton"}, "compositeScore": 32}
+]
