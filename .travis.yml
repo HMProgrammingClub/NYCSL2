@@ -1,7 +1,8 @@
 sudo: true
 
 language: python
-python: 3.4
+python:
+- "3.4"
 
 install:
 - cd ~/build/HMProgrammingClub/NYCSL2/backend
