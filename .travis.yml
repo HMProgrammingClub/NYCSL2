@@ -8,6 +8,7 @@ python:
 install:
 - cd ~/build/HMProgrammingClub/NYCSL2/backend
 - ./install.sh
+- sudo mkdir -p /data/db/
 
 script:
 - cd ~/build/HMProgrammingClub/NYCSL2/
