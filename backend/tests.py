@@ -237,7 +237,7 @@ class SearchTestCase(NYCSLTestCase):
 		assert b'[]' in self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
 
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
-		self.db.insert_one(exampleUser)
+		self.db.user.insert_one(exampleUser)
 
 		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
 		returnedResults = json.loads(req.data.decode("utf-8"))

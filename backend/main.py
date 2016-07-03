@@ -4,7 +4,7 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from bson.objectid import ObjectId
 from tools import jsonify
 
-from pymongo import MongoClient
+from pymongo import MongoClient, TEXT
 
 import configparser
 
@@ -17,6 +17,8 @@ config = configparser.ConfigParser()
 config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
+
+SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}]
 
 db = MongoClient().nycsl
 
@@ -263,19 +265,19 @@ class SearchAPI(Resource):
 		query = args["query"]
 		maxResults = args["maxResults"]
 
-		collectionNames = db.collection_names()
 		searchResults = []
-
 		isDone = False
-		for collectionName in collectionNames:
+		for collectionAttrs in SEARCHABLE_COLLECTION_ATTRIBUTES:
 			if isDone: break
-			db[collectionName].createIndex({"$**":"text"})
-			results = db[collectionName].find({"$text": {"$search": query}})
+
+			collection = db[collectionAttrs["collectionName"]]
+			collection.create_index([("$**", TEXT)])
+			results = collection.find({"$text": {"$search": query}})
 			for res in results:
 				if len(searchResults) >= maxResults:
 					isDone = True
 					break
-				searchResults.append(res)
+				searchResults.append({"category": collectionAttrs["collectionName"], "name": res[collectionAttrs['nameField']], "link": collectionAttrs['linkLead']+str(res["_id"])})
 
 		return jsonify(searchResults)
 
