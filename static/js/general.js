@@ -91,7 +91,7 @@ var NavBar = React.createClass({
                 <div className="image content">
                     <div className="description">
                         <div className="ui header">Click the button below to login with Github.</div>
-                        <p>If you don't already have an account linked to your Github profile, that's ok. We'll automatically detect it and help you get things set up.</p>
+                        <p>If you don't already have an account linked to your Github profile, that's ok. Well automatically detect it and help you get things set up.</p>
                     </div>
                 </div>
                 <div className="actions">
@@ -179,17 +179,12 @@ var NavBar = React.createClass({
     }
 });
 
-var games = [
-    { id:"ST", name:"Steiner Tree", season:0 },
-    { id:"TR", name:"Tron", season:0 },
-    { id:"RM", name:"Roommate", season:0 },
-    { id:"TS", name:"Traveling Salesman", season:0 }
-];
-
-ReactDOM.render(
-    <Sidebar games={games} active={document.body.id} />,
-    document.getElementById('sidebarBox')
-);
+$.get('/tempData/games.json', function (result) {
+    ReactDOM.render(
+        <Sidebar games={result} active={document.body.id} />,
+        document.getElementById('sidebarBox')
+    );
+});
 
 ReactDOM.render(
     <NavBar githubID="7736334" logState={false} />,

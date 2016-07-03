@@ -106,25 +106,22 @@ var UserGrid = React.createClass({
     }
 });
 
-var UserData = [
-    { id: 3, githubID: 7736334, name: "Henry Wildermuth", school:{id: "HM", name: "Horace Mann"}, compositeScore: 22},
-    { id: 4, githubID: 2452433, name: "Joshua Gruenstein", school:{id: "DA", name: "Dalton"}, compositeScore: 32}
-];
-
 // render first n elements (or all with nonzero score) of the same data
 // i think it makes sense caus it lowers the number of requests
 // ex:
 
-var QualifiedData = UserData.filter(function(user) {
-    return user.compositeScore != 0;
+$.get('/tempData/users.json', function (result) {
+    var QualifiedData = result.filter(function(user) {
+        return user.compositeScore != 0;
+    });
+
+    ReactDOM.render(
+        <QualifiedLeaderboard students={QualifiedData} />,
+        document.getElementById('qualifiedBox')
+    );
+
+    ReactDOM.render(
+        <UserGrid students={result} />,
+        document.getElementById('usersBox')
+    );
 });
-
-ReactDOM.render(
-    <QualifiedLeaderboard students={QualifiedData} />,
-    document.getElementById('qualifiedBox')
-);
-
-ReactDOM.render(
-    <UserGrid students={UserData} />,
-    document.getElementById('usersBox')
-);

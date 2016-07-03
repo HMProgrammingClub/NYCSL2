@@ -1,11 +1,15 @@
 sudo: true
 
 language: python
-python: 3.5
+python:
+- 3.5
+- 3.4
+- 3.4.3
 
 install:
 - cd ~/build/HMProgrammingClub/NYCSL2/backend
 - ./install.sh
+- sudo mkdir -p /data/db/
 
 script:
 - cd ~/build/HMProgrammingClub/NYCSL2/
