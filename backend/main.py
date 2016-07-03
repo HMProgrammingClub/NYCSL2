@@ -20,6 +20,10 @@ SALT = config["BACKEND"]["salt"]
 
 db = MongoClient().nycsl
 
+def hashPassword(password):
+	passbits = password.encode('utf-8')
+	saltbits = SALT.encode('utf-8')
+	return b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
 
 class LoginAPI(Resource):
 	def __init__(self):
@@ -43,7 +47,7 @@ class LoginAPI(Resource):
 			abort(409)
 
 		args = self.parser.parse_args()
-		user = db.user.find_one({"email": args["email"], "password": args["password"]})
+		user = db.user.find_one({"email": args["email"], "password": hashPassword(args["password"])})
 		if user is None:
 			abort(400)
 
@@ -72,11 +76,7 @@ class UserListAPI(Resource):
 	def post(self):
 		user = self.parser.parse_args()
 		user["isVerified"] = False
-
-		# Hash password
-		passbits = user["password"].encode('utf-8')
-		saltbits = SALT.encode('utf-8')
-		user["password"] = b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
+		user["password"] = hashPassword(user["password"])
 
 		db.user.insert_one(user)
 

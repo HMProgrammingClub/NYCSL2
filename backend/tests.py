@@ -50,6 +50,7 @@ class LoginTestCase(NYCSLTestCase):
 	def testPost(self):
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
+		exampleUser["password"] = main.hashPassword(exampleUser["password"])
 
 		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
 
@@ -176,54 +177,7 @@ def generateExampleEntry(db):
 	db.user.insert_one(exampleUser)
 	db.problem.insert_one(exampleProblem)
 
-	return {"problemID": exampleProblem["_id"], "problemID": str(exampleProblem["_id"]}
-
-class EntryTestCase(NYCSLTestCase):
-	def testGetAll(self):
-		assert b'[]' in self.app.get("/entries").data
-
-		exampleEntry = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.entry.insert_one(exampleEntry)
-		newProblem = json.loads(self.app.get("/entries").data.decode("utf-8"))[0]
-		assert areDicsEqual(exampleEntry, newProblem)
-	def testGet(self):
-		assert self.app.get("/entries/1").status_code == 404
-
-		exampleEntry = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.entry.insert_one(exampleEntry)
-		newProblem = json.loads(self.app.get("/entries/"+str(exampleEntry['_id'])).data.decode("utf-8"))
-		assert areDicsEqual(exampleEntry, newProblem)
-	def testPost(self):
-		exampleEntry = copy.deepcopy(EXAMPLE_PROBLEM)
-
-		assert self.db.entry.find_one(exampleEntry) is None
-
-		req = self.app.post("/entries", data=json.dumps(exampleEntry), content_type="application/json")
-		assert req.status_code == 201
-
-		returnedProblem = json.loads(req.data.decode("utf-8"))
-		assert "_id" in returnedProblem
-		returnedProblem.pop("_id")
-
-		assert areDicsEqual(exampleEntry, returnedProblem)
-		assert self.db.entry.find_one(exampleEntry) is not None
-	def testPut(self):
-		exampleEntry = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.entry.insert_one(exampleEntry)
-
-		exampleEntry["name"] = "A way different name"
-		exampleEntry["_id"] = str(exampleEntry["_id"])
-
-		req = self.app.put("/entries/"+exampleEntry["_id"], data=json.dumps(exampleEntry), content_type="application/json")
-		returnedProblem = json.loads(req.data.decode("utf-8"))
-
-		assert areDicsEqual(returnedProblem, exampleEntry)
-
-	def testDelete(self):
-		exampleEntry = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.entry.insert_one(exampleEntry)
-		self.app.delete("/entries/"+str(exampleEntry["_id"]))
-		assert self.db.problem.find_one(exampleEntry) is None
+	return {"problemID": exampleProblem["_id"], "problemID": str(exampleProblem["_id"])}
 
 if __name__ == '__main__':
 	unittest.main()
