@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo apt-get update -y
-
-yes | sudo apt-get install -y mongodb
-sudo -H pip install -r requirements.txt
+apt-get update -y
+yes | apt-get install -y mongodb
+pip3 install -r requirements.txt | pip install -r requirements.txt
