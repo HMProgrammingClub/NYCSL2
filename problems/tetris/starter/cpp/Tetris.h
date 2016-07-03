@@ -140,7 +140,7 @@ class Board {
                     boardFile.close();
                 }
             else {
-                throw "Unable to open file";
+                throw std::runtime_error("Unable to open file");
             }
             // deserialize input string and load into queue
             for (char c : piecesString) {
