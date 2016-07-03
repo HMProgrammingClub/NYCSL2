@@ -256,14 +256,14 @@ class SearchAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("query", type=str, required=True, location="json")
 		self.parser.add_argument("maxResults", type=int, default=10, location="json")
-		super(EntryAPI, self).__init__()
+		super(SearchAPI, self).__init__()
 
-	def get(self, searchQuery):
+	def get(self):
 		args = self.parser.parse_args()
 		query = args["query"]
 		maxResults = args["maxResults"]
 
-		collectionNames = db.getCollectionNames()
+		collectionNames = db.collection_names()
 		searchResults = []
 
 		isDone = False

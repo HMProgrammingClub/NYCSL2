@@ -232,6 +232,17 @@ class EntryTestCase(NYCSLTestCase):
 		self.app.delete("/entries/"+str(exampleEntry["_id"]))
 		assert self.db.problem.find_one(exampleEntry) is None
 
+class SearchTestCase(NYCSLTestCase):
+	def testGet(self):
+		assert b'[]' in self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
+
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
+		self.db.insert_one(exampleUser)
+
+		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
+		returnedResults = json.loads(req.data.decode("utf-8"))
+		correctResult = {"name": exampleUser["name"], "category": "user", "link": "/users/"+str(exampleUser["_id"])}
+		assert correctResult in returnedResults
 
 if __name__ == '__main__':
 	unittest.main()
