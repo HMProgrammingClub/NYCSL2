@@ -251,6 +251,34 @@ class EntryAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
+class SearchAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("query", type=str, required=True, location="json")
+		self.parser.add_argument("maxResults", type=int, default=10, location="json")
+		super(EntryAPI, self).__init__()
+
+	def get(self, searchQuery):
+		args = self.parser.parse_args()
+		query = args["query"]
+		maxResults = args["maxResults"]
+
+		collectionNames = db.getCollectionNames()
+		searchResults = []
+
+		isDone = False
+		for collectionName in collectionNames:
+			if isDone: break
+			db[collectionName].createIndex({"$**":"text"})
+			results = db[collectionName].find({"$text": {"$search": query}})
+			for res in results:
+				if len(searchResults) >= maxResults:
+					isDone = True
+					break
+				searchResults.append(res)
+
+		return jsonify(searchResults)
+
 api = Api(app)
 
 api.add_resource(LoginAPI, '/login', endpoint='login')
@@ -263,6 +291,8 @@ api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
 api.add_resource(EntryListAPI, '/entries', endpoint='entries')
 api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
+
+api.add_resource(SearchAPI, '/search', endpoint='search')
 
 if __name__ == '__main__':
 	app.run(debug=True)
