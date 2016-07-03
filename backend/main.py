@@ -4,11 +4,11 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from bson.objectid import ObjectId
 from tools import jsonify
 
-from pymongo import MongoClient
+from pymongo import MongoClient, TEXT
 
 import configparser
 
-from hashlib import pbkdf2_hmac
+import hashlib
 from base64 import b64encode
 
 app = Flask(__name__, static_url_path="")
@@ -18,8 +18,14 @@ config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
 
+SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}]
+
 db = MongoClient().nycsl
 
+def hashPassword(password):
+	passbits = password.encode('utf-8')
+	saltbits = SALT.encode('utf-8')
+	return b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
 
 class LoginAPI(Resource):
 	def __init__(self):
@@ -43,7 +49,7 @@ class LoginAPI(Resource):
 			abort(409)
 
 		args = self.parser.parse_args()
-		user = db.user.find_one({"email": args["email"], "password": args["password"]})
+		user = db.user.find_one({"email": args["email"], "password": hashPassword(args["password"])})
 		if user is None:
 			abort(400)
 
@@ -73,10 +79,7 @@ class UserListAPI(Resource):
 		user = self.parser.parse_args()
 		user["isVerified"] = False
 
-		# Hash password
-		passbits = user["password"].encode('utf-8')
-		saltbits = SALT.encode('utf-8')
-		user["password"] = b64encode(pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
+		user["password"] = hashPassword(user["password"])
 
 		db.user.insert_one(user)
 
@@ -199,6 +202,14 @@ class EntryListAPI(Resource):
 	def post(self):
 		entry = self.parser.parse_args()
 
+		try:
+			if db.problem.find_one({"_id": ObjectId(entry['problemID'])}) == None:
+				abort(400)
+			if db.user.find_one({"_id": ObjectId(entry['userID'])}) == None:
+				abort(400)
+		except:
+			abort(400)
+
 		db.entry.insert_one(entry)
 
 		return jsonify(entry, status=201)
@@ -208,7 +219,7 @@ class EntryAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("problemID", type=str, location="json")
 		self.parser.add_argument("userID", type=str, location="json")
-		self.parser.add_argument("score", type=str, location="json")
+		self.parser.add_argument("score", type=int, location="json")
 		super(EntryAPI, self).__init__()
 
 	def get(self, entryID):
@@ -242,6 +253,34 @@ class EntryAPI(Resource):
 			abort(404)
 		return jsonify({"result": True})
 
+class SearchAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("query", type=str, required=True, location="json")
+		self.parser.add_argument("maxResults", type=int, default=10, location="json")
+		super(SearchAPI, self).__init__()
+
+	def get(self):
+		args = self.parser.parse_args()
+		query = args["query"]
+		maxResults = args["maxResults"]
+
+		searchResults = []
+		isDone = False
+		for collectionAttrs in SEARCHABLE_COLLECTION_ATTRIBUTES:
+			if isDone: break
+
+			collection = db[collectionAttrs["collectionName"]]
+			collection.create_index([("$**", TEXT)])
+			results = collection.find({"$text": {"$search": query}})
+			for res in results:
+				if len(searchResults) >= maxResults:
+					isDone = True
+					break
+				searchResults.append({"category": collectionAttrs["collectionName"], "name": res[collectionAttrs['nameField']], "link": collectionAttrs['linkLead']+str(res["_id"])})
+
+		return jsonify(searchResults)
+
 api = Api(app)
 
 api.add_resource(LoginAPI, '/login', endpoint='login')
@@ -252,8 +291,10 @@ api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
-api.add_resource(ProblemListAPI, '/entries', endpoint='entries')
-api.add_resource(ProblemAPI, '/entries/<entryID>', endpoint='entry')
+api.add_resource(EntryListAPI, '/entries', endpoint='entries')
+api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
+
+api.add_resource(SearchAPI, '/search', endpoint='search')
 
 if __name__ == '__main__':
 	app.run(debug=True)

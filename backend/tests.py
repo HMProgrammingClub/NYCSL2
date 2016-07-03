@@ -32,12 +32,12 @@ class NYCSLTestCase(unittest.TestCase):
 	def tearDown(self):
 		MongoClient().drop_database("test")
 
-DUMMY_USER = {"email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
+EXAMPLE_USER = {"email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
 
 class LoginTestCase(NYCSLTestCase):
 	def testGet(self):
 		assert json.loads(self.app.get("/login").data.decode("utf-8")) == {"loggedIn": False}
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 
 		with self.app.session_transaction() as session:
@@ -48,8 +48,9 @@ class LoginTestCase(NYCSLTestCase):
 		assert areDicsEqual(response["user"], exampleUser)
 
 	def testPost(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
+		exampleUser["password"] = main.hashPassword(exampleUser["password"])
 
 		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
 
@@ -72,19 +73,19 @@ class UserTestCase(NYCSLTestCase):
 	def testGetAll(self):
 		assert b'[]' in self.app.get("/users").data
 
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 		newUser = json.loads(self.app.get("/users").data.decode("utf-8"))[0]
 		assert areDicsEqual(exampleUser, newUser)
 	def testGet(self):
 		assert self.app.get("/users/1").status_code == 404
 
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 		newUser = json.loads(self.app.get("/users/"+str(exampleUser['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleUser, newUser)
 	def testPost(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 
 		assert self.db.user.find_one(exampleUser) is None
 
@@ -103,7 +104,7 @@ class UserTestCase(NYCSLTestCase):
 		assert areDicsEqual(exampleUser, returnedUser)
 		assert self.db.user.find_one(exampleUser) is not None
 	def testPut(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 
 		exampleUser["name"] = "A way different name"
@@ -115,30 +116,30 @@ class UserTestCase(NYCSLTestCase):
 		assert areDicsEqual(returnedUser, exampleUser)
 
 	def testDelete(self):
-		exampleUser = copy.deepcopy(DUMMY_USER)
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 		self.app.delete("/users/"+str(exampleUser["_id"]))
 		assert self.db.user.find_one(exampleUser) is None
 
-DUMMY_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
+EXAMPLE_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
 
 class ProblemTestCase(NYCSLTestCase):
 	def testGetAll(self):
 		assert b'[]' in self.app.get("/problems").data
 
-		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
 		self.db.problem.insert_one(exampleProblem)
 		newProblem = json.loads(self.app.get("/problems").data.decode("utf-8"))[0]
 		assert areDicsEqual(exampleProblem, newProblem)
 	def testGet(self):
 		assert self.app.get("/problems/1").status_code == 404
 
-		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
 		self.db.problem.insert_one(exampleProblem)
 		newProblem = json.loads(self.app.get("/problems/"+str(exampleProblem['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleProblem, newProblem)
 	def testPost(self):
-		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
 
 		assert self.db.problem.find_one(exampleProblem) is None
 
@@ -152,7 +153,7 @@ class ProblemTestCase(NYCSLTestCase):
 		assert areDicsEqual(exampleProblem, returnedProblem)
 		assert self.db.problem.find_one(exampleProblem) is not None
 	def testPut(self):
-		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
 		self.db.problem.insert_one(exampleProblem)
 
 		exampleProblem["name"] = "A way different name"
@@ -164,10 +165,84 @@ class ProblemTestCase(NYCSLTestCase):
 		assert areDicsEqual(returnedProblem, exampleProblem)
 
 	def testDelete(self):
-		exampleProblem = copy.deepcopy(DUMMY_PROBLEM)
+		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
 		self.db.problem.insert_one(exampleProblem)
 		self.app.delete("/problems/"+str(exampleProblem["_id"]))
 		assert self.db.problem.find_one(exampleProblem) is None
+
+INVALID_EXAMPLE_ENTRY = {"problemID": "incorrectproblemid", "userID": "incorrectuserid", "score": 12}
+
+def generateExampleEntry(db):
+	exampleUser = copy.deepcopy(EXAMPLE_USER)
+	exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
+
+	db.user.insert_one(exampleUser)
+	db.problem.insert_one(exampleProblem)
+
+	return {"problemID": str(exampleProblem["_id"]), "userID": str(exampleUser["_id"]), "score": "12"}
+
+class EntryTestCase(NYCSLTestCase):
+	def testGetAll(self):
+		assert b'[]' in self.app.get("/entries").data
+
+		exampleEntry = generateExampleEntry(self.db)
+		self.db.entry.insert_one(exampleEntry)
+		newEntry = json.loads(self.app.get("/entries").data.decode("utf-8"))[0]
+		assert areDicsEqual(exampleEntry, newEntry)
+
+	def testGet(self):
+		assert self.app.get("/entries/1").status_code == 404
+
+		exampleEntry = generateExampleEntry(self.db)
+		self.db.entry.insert_one(exampleEntry)
+		newEntry = json.loads(self.app.get("/entries/"+str(exampleEntry['_id'])).data.decode("utf-8"))
+		assert areDicsEqual(exampleEntry, newEntry)
+	def testPost(self):
+		invalidEntryReq = self.app.post("/entries", data=json.dumps(INVALID_EXAMPLE_ENTRY), content_type="application/json")
+		assert invalidEntryReq.status_code == 400
+
+		exampleEntry = generateExampleEntry(self.db)
+
+		assert self.db.entry.find_one(exampleEntry) is None
+
+		req = self.app.post("/entries", data=json.dumps(exampleEntry), content_type="application/json")
+		assert req.status_code == 201
+
+		returnedEntry = json.loads(req.data.decode("utf-8"))
+		assert "_id" in returnedEntry
+		returnedEntry.pop("_id")
+
+		assert areDicsEqual(exampleEntry, returnedEntry)
+		assert self.db.entry.find_one(exampleEntry) is not None
+	def testPut(self):
+		exampleEntry = generateExampleEntry(self.db)
+		self.db.entry.insert_one(exampleEntry)
+
+		exampleEntry["score"] = 80980809
+		exampleEntry["_id"] = str(exampleEntry["_id"])
+
+		req = self.app.put("/entries/"+exampleEntry["_id"], data=json.dumps(exampleEntry), content_type="application/json")
+		returnedEntry = json.loads(req.data.decode("utf-8"))
+
+		assert areDicsEqual(returnedEntry, exampleEntry)
+
+	def testDelete(self):
+		exampleEntry = generateExampleEntry(self.db)
+		self.db.entry.insert_one(exampleEntry)
+		self.app.delete("/entries/"+str(exampleEntry["_id"]))
+		assert self.db.problem.find_one(exampleEntry) is None
+
+class SearchTestCase(NYCSLTestCase):
+	def testGet(self):
+		assert b'[]' in self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
+
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
+		self.db.user.insert_one(exampleUser)
+
+		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
+		returnedResults = json.loads(req.data.decode("utf-8"))
+		correctResult = {"name": exampleUser["name"], "category": "user", "link": "/users/"+str(exampleUser["_id"])}
+		assert correctResult in returnedResults
 
 if __name__ == '__main__':
 	unittest.main()

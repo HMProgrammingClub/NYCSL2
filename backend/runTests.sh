@@ -1,2 +1,3 @@
-sudo mongod &
-python tests.py
+#!/bin/bash
+mongod &
+python3 tests.py
