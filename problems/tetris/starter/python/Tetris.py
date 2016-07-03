@@ -175,7 +175,7 @@ class Board:
             r -= 1
         return round(1.189207115**lines * 100 * lines)
 
-    def ouputMovesToFile(self, filename='output.txt'):
+    def outputMovesToFile(self, filename='output.txt'):
         with open(filename, "w") as out:
             out.write(self.moves)
 
