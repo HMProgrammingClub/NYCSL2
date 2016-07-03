@@ -8,7 +8,7 @@ from pymongo import MongoClient
 
 import configparser
 
-from hashlib import pbkdf2_hmac
+import hashlib
 from base64 import b64encode
 
 app = Flask(__name__, static_url_path="")
@@ -76,7 +76,7 @@ class UserListAPI(Resource):
 	def post(self):
 		user = self.parser.parse_args()
 		user["isVerified"] = False
-		
+
 		user["password"] = hashPassword(user["password"])
 
 		db.user.insert_one(user)
@@ -200,6 +200,14 @@ class EntryListAPI(Resource):
 	def post(self):
 		entry = self.parser.parse_args()
 
+		try:
+			if db.problem.find_one({"_id": ObjectId(entry['problemID'])}) == None:
+				abort(400)
+			if db.user.find_one({"_id": ObjectId(entry['userID'])}) == None:
+				abort(400)
+		except:
+			abort(400)
+
 		db.entry.insert_one(entry)
 
 		return jsonify(entry, status=201)
@@ -209,7 +217,7 @@ class EntryAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("problemID", type=str, location="json")
 		self.parser.add_argument("userID", type=str, location="json")
-		self.parser.add_argument("score", type=str, location="json")
+		self.parser.add_argument("score", type=int, location="json")
 		super(EntryAPI, self).__init__()
 
 	def get(self, entryID):
@@ -253,8 +261,8 @@ api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
-api.add_resource(ProblemListAPI, '/entries', endpoint='entries')
-api.add_resource(ProblemAPI, '/entries/<entryID>', endpoint='entry')
+api.add_resource(EntryListAPI, '/entries', endpoint='entries')
+api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
 
 if __name__ == '__main__':
 	app.run(debug=True)
