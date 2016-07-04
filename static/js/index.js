@@ -174,7 +174,7 @@ $.get('http://' + location.hostname + ':5000/entries', function (result) {
 });
 
 $.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
-    result = resultArr[0]
+    var result = resultArr[3]
 	ReactDOM.render(
     	<Jumbo game={result.name} desc={result.desc} links={result.links} />,
     	document.getElementById('jumboBox')
