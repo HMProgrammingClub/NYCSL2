@@ -138,6 +138,46 @@ class UserAPI(Resource):
 		return jsonify({"result": True})
 
 
+class EventListAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("userID", type=str, required=True, location="json")
+		self.parser.add_argument("title", type=str, required=True, location="json")
+		self.parser.add_argument("description", type=str, required=True, location="json")
+		super(EventListAPI, self).__init__()
+
+	def get(self):
+		return jsonify([a for a in db.event.find({})])
+
+	def post(self):
+		event = self.parser.parse_args()
+
+		try:
+			db.find_one({"_id": ObjectId(event['userID'])})
+		except:
+			abort(400)
+
+		db.event.insert_one(event)
+
+		return jsonify(event, status=201)
+
+
+class EventAPI(Resource):
+	def get(self, eventID):
+		try:
+			event = db.event.find_one({"_id": ObjectId(eventID)})
+		except:
+			abort(404)
+		if user is None:
+			abort(404)
+		return jsonify(event)
+
+	def delete(self, eventID):
+		result = db.event.delete_one({"_id": ObjectId(eventID)})
+		if result.deleted_count < 1:
+			abort(404)
+		return jsonify({"result": True})
+
 
 class ProblemListAPI(Resource):
 	def __init__(self):
@@ -291,6 +331,9 @@ api.add_resource(LoginAPI, '/login', endpoint='login')
 
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
+
+api.add_resource(UserListAPI, '/events', endpoint='events')
+api.add_resource(UserAPI, '/events/<eventID>', endpoint='event')
 
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
