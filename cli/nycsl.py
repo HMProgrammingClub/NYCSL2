@@ -5,8 +5,8 @@ import json
 
 API_LOCATION = 'http://192.241.178.181/'
 
-# Check if connected to internet
 def checkInternet():
+    """Returns true if connected to internet."""
     try:
         # connect to the host -- tells us if the host is actually
         # reachable
@@ -16,9 +16,9 @@ def checkInternet():
         pass
     return False
 
-# Function to pull from the leaderboard
 def leaderboard():
-    response = urllib2.urlopen(API_LOCATION + 'tempData/leaderboard.json')
+    """Pulls from the server and prints the leaderboard."""
+    response = urllib2.urlopen(API_LOCATION + 'tempData/leaderboard.json') # <- Replace with actual link once API is functional
     data = json.loads(response.read())
     data = data[:count]
     print('                         ' + 'NYCSL Leaderboard')
@@ -32,17 +32,17 @@ def leaderboard():
             + str(i[u'score']) + (' '* (14-len(str(i[u'score'])))) + '|'
         )
 
-# Function to upload to the server
 def upload():
+    """Uploads a file to the server."""
     pass
 
-# Function to manage user account locally
 def user():
+    """Manage account locally."""
     pass
 
 # All the argparsing stuff
 parser = argparse.ArgumentParser(description='A command line interface for nycsl.io.')
-parser.add_argument('filename', nargs='?', help='The filename of the of the file being uploaded/graded')
+parser.add_argument('filename', nargs='?', help='The filename of the of the file being uploaded')
 parser.add_argument('-l', '--leaderboard', dest='func', action='store_const', const=leaderboard, help='Show current leaderboard.')
 parser.add_argument('-c', '--count', default=10, type=int, help='# of places to show in the leaderboard')
 parser.add_argument('-u', '--upload', dest='func', action='store_const', const=upload, help='Upload the file to the nycsl.io server.')
@@ -55,4 +55,5 @@ if __name__ == '__main__':
     if not checkInternet():
         parser.exit('No internet connection')
     count = args.count
+    filename = args.filename
     args.func()
