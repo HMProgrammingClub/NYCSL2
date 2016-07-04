@@ -1,5 +1,6 @@
 import copy
 import sys
+import json
 
 class Piece:
     def __init__(self, key):
@@ -209,7 +210,7 @@ if __name__ == '__main__':
         try:
             for char in data:
                 if char != '\n':
-                    totalScore += makeMove(char)
+                    totalScore += B.makeMove(char)
         except RuntimeError as e:
             print(json.dumps({"error": str(e)}))
             sys.exit()
