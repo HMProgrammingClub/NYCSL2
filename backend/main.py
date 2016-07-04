@@ -297,4 +297,4 @@ api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
 api.add_resource(SearchAPI, '/search', endpoint='search')
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host="0.0.0.0", debug=True)
