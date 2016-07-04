@@ -16,6 +16,8 @@ from base64 import b64encode
 import subprocess
 import shlex
 
+import datetime
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
@@ -85,7 +87,7 @@ class UserListAPI(Resource):
 	def post(self):
 		user = self.parser.parse_args()
 		user["isVerified"] = False
-
+		user["joinDate"] = datetime.datetime.today().strftime('%Y-%m-%d')
 		user["password"] = hashPassword(user["password"])
 
 		db.user.insert_one(user)

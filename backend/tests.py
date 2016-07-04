@@ -4,6 +4,7 @@ import copy
 import json
 import flask
 from pymongo import MongoClient
+import datetime
 
 def areDicsEqual(dic1, dic2):
 	if len(dic1) != len(dic2):
@@ -95,8 +96,17 @@ class UserTestCase(NYCSLTestCase):
 		returnedUser = json.loads(req.data.decode("utf-8"))
 		assert "_id" in returnedUser
 		returnedUser.pop("_id")
+
+		assert "joinDate" in returnedUser
+		try:
+			datetime.datetime.strptime(returnedUser["joinDate"], '%Y-%m-%d')
+		except:
+			assert False
+		returnedUser.pop("joinDate")
+
 		assert "isVerified" in returnedUser
 		returnedUser.pop("isVerified")
+
 		assert returnedUser["password"] != exampleUser["password"]
 		returnedUser.pop("password")
 		exampleUser.pop("password")
