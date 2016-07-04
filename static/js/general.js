@@ -179,7 +179,7 @@ var NavBar = React.createClass({
     }
 });
 
-$.get(location.hostname + ':5000/problems', function (result) {
+$.get('http://' + location.hostname + ':5000/problems', function (result) {
     ReactDOM.render(
         <Sidebar games={result} active={document.body.id} />,
         document.getElementById('sidebarBox')
