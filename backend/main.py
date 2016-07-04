@@ -1,5 +1,6 @@
 from flask import Flask, abort, session, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask.ext.cors import CORS
 
 from bson.objectid import ObjectId
 from tools import jsonify
@@ -295,6 +296,8 @@ api.add_resource(EntryListAPI, '/entries', endpoint='entries')
 api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
 
 api.add_resource(SearchAPI, '/search', endpoint='search')
+
+CORS(app)
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug=True)
