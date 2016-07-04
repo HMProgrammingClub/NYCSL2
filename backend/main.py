@@ -1,5 +1,6 @@
 from flask import Flask, abort, session, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
+from flask.ext.cors import CORS
 from werkzeug import FileStorage
 
 from bson.objectid import ObjectId
@@ -229,7 +230,7 @@ class EntryListAPI(Resource):
 			status_code = 201
 		else:
 			status_code = 400
-			
+
 		return jsonify(structuredGradingOutput, status=status_code)
 
 class EntryAPI(Resource):
@@ -314,5 +315,7 @@ api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
 
 api.add_resource(SearchAPI, '/search', endpoint='search')
 
+CORS(app)
+
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host="0.0.0.0", debug=True)
