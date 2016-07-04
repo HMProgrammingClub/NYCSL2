@@ -166,16 +166,17 @@ var Jumbo = React.createClass({
     }
 });
 
-$.get('/tempData/leaderboard.json', function (result) {
+$.get('http://' + location.hostname + ':5000/entries', function (result) {
 	ReactDOM.render(
 	    <Leaderboard data={result} />,
 	    document.getElementById('leaderBoard')
 	);
 });
 
-$.get('/tempData/jumbodata.json', function (result) {
+$.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
+    result = resultArr[0]
 	ReactDOM.render(
-    	<Jumbo game={result.game} desc={result.desc} links={result.links} />,
+    	<Jumbo game={result.name} desc={result.desc} links={result.links} />,
     	document.getElementById('jumboBox')
 	);
 });
