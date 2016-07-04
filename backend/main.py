@@ -28,6 +28,7 @@ SALT = config["BACKEND"]["salt"]
 SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}]
 PROBLEMS_DIR = "../problems/"
 GRADING_SCRIPT = "grade.py"
+CURRENT_SEASON = 0
 
 db = MongoClient().nycsl
 
@@ -151,6 +152,7 @@ class ProblemListAPI(Resource):
 
 	def post(self):
 		problem = self.parser.parse_args()
+		problem["season"] = CURRENT_SEASON
 
 		db.problem.insert_one(problem)
 

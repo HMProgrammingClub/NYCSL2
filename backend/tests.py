@@ -160,6 +160,9 @@ class ProblemTestCase(NYCSLTestCase):
 		assert "_id" in returnedProblem
 		returnedProblem.pop("_id")
 
+		assert "season" in returnedProblem
+		returnedProblem.pop("season")
+
 		assert areDicsEqual(exampleProblem, returnedProblem)
 		assert self.db.problem.find_one(exampleProblem) is not None
 	def testPut(self):
