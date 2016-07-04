@@ -73,7 +73,7 @@ var UserTables = React.createClass({
     }
 });
 
-$.get('/tempData/dummyuser.json', function (result) {
+$.get('http://' + location.hostname + ':5000/users?userID=' + window.location.search.replace("?u=", ""), function (result) {
     ReactDOM.render(
         <UserProfile student={result} />,
         document.getElementById('userBox')
