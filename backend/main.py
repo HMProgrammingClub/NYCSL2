@@ -1,6 +1,7 @@
 from flask import Flask, abort, session, make_response
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.cors import CORS
+from werkzeug import FileStorage
 
 from bson.objectid import ObjectId
 from tools import jsonify
@@ -12,6 +13,9 @@ import configparser
 import hashlib
 from base64 import b64encode
 
+import subprocess
+import shlex
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
@@ -20,6 +24,8 @@ app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
 
 SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}]
+PROBLEMS_DIR = "../problems/"
+GRADING_SCRIPT = "grade.py"
 
 db = MongoClient().nycsl
 
@@ -133,7 +139,6 @@ class UserAPI(Resource):
 class ProblemListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("abbreviation", type=str, required=True, location="json")
 		self.parser.add_argument("isAscending", type=bool, required=True, location="json")
 		self.parser.add_argument("name", type=str, required=True, location="json")
 		self.parser.add_argument("description", type=str, required=True, location="json")
@@ -152,7 +157,6 @@ class ProblemListAPI(Resource):
 class ProblemAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("abbreviation", type=str, location="json")
 		self.parser.add_argument("isAscending", type=bool, location="json")
 		self.parser.add_argument("name", type=str, location="json")
 		self.parser.add_argument("description", type=str, location="json")
@@ -194,7 +198,7 @@ class EntryListAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("problemID", type=str, required=True, location="json")
 		self.parser.add_argument("userID", type=str, required=True, location="json")
-		self.parser.add_argument("score", type=str, required=True, location="json")
+		self.parser.add_argument("file", type=werkzeug.FileStorage, required=True, location="files")
 		super(EntryListAPI, self).__init__()
 
 	def get(self):
@@ -211,9 +215,21 @@ class EntryListAPI(Resource):
 		except:
 			abort(400)
 
-		db.entry.insert_one(entry)
+		gradingFilePath = os.path.join(os.path.join(PROBLEMS_DIR, db.problem.find_one({"_id": ObjectId(entry['problemID'])})['name'].lower()), GRADING_SCRIPT)
+		command = "python3 "+gradingFilePath+" \""+entry["file"].stream+"\""
+		gradingOutput = subprocess.Popen(shlex.split(.replace('\\','/')), stdout=subprocess.PIPE).communicate()[0]
+		structuredGradingOutput = json.loads(gradingOutput)
 
-		return jsonify(entry, status=201)
+		status_code = None
+		if "score" in structuredGradingOutput:
+			entry["score"] = structuredGradingOutput["score"]
+			entry.pop("file")
+			db.entry.insert_one(entry)
+			status_code = 201
+		else:
+			status_code = 400
+
+		return jsonify(structuredGradingOutput, status=status_code)
 
 class EntryAPI(Resource):
 	def __init__(self):

@@ -121,7 +121,7 @@ class UserTestCase(NYCSLTestCase):
 		self.app.delete("/users/"+str(exampleUser["_id"]))
 		assert self.db.user.find_one(exampleUser) is None
 
-EXAMPLE_PROBLEM = {"abbreviation": "TR", "isAscending": True, "name": "Tron", "description": "Write a bot to play the game Tron"}
+EXAMPLE_PROBLEM = {"isAscending": True, "name": "Tetris", "description": "Write a bot to play the classic game Tetris"}
 
 class ProblemTestCase(NYCSLTestCase):
 	def testGetAll(self):
