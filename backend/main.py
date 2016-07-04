@@ -217,7 +217,7 @@ class EntryListAPI(Resource):
 
 		gradingFilePath = os.path.join(os.path.join(PROBLEMS_DIR, db.problem.find_one({"_id": ObjectId(entry['problemID'])})['name'].lower()), GRADING_SCRIPT)
 		command = "python3 "+gradingFilePath+" \""+entry["file"].stream+"\""
-		gradingOutput = subprocess.Popen(shlex.split(.replace('\\','/')), stdout=subprocess.PIPE).communicate()[0]
+		gradingOutput = subprocess.Popen(shlex.split(command.replace('\\','/')), stdout=subprocess.PIPE).communicate()[0]
 		structuredGradingOutput = json.loads(gradingOutput)
 
 		status_code = None
