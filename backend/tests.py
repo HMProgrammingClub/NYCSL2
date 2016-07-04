@@ -197,23 +197,6 @@ class EntryTestCase(NYCSLTestCase):
 		self.db.entry.insert_one(exampleEntry)
 		newEntry = json.loads(self.app.get("/entries/"+str(exampleEntry['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleEntry, newEntry)
-	def testPost(self):
-		invalidEntryReq = self.app.post("/entries", data=json.dumps(INVALID_EXAMPLE_ENTRY), content_type="application/json")
-		assert invalidEntryReq.status_code == 400
-
-		exampleEntry = generateExampleEntry(self.db)
-
-		assert self.db.entry.find_one(exampleEntry) is None
-
-		req = self.app.post("/entries", data=json.dumps(exampleEntry), content_type="application/json")
-		assert req.status_code == 201
-
-		returnedEntry = json.loads(req.data.decode("utf-8"))
-		assert "_id" in returnedEntry
-		returnedEntry.pop("_id")
-
-		assert areDicsEqual(exampleEntry, returnedEntry)
-		assert self.db.entry.find_one(exampleEntry) is not None
 
 	def testDelete(self):
 		exampleEntry = generateExampleEntry(self.db)
