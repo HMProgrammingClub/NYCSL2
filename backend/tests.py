@@ -131,6 +131,47 @@ class UserTestCase(NYCSLTestCase):
 		self.app.delete("/users/"+str(exampleUser["_id"]))
 		assert self.db.user.find_one(exampleUser) is None
 
+def generateExampleEvent(db):
+	exampleUser = copy.deepcopy(EXAMPLE_USER)
+	db.user.insert_one(exampleUser)
+
+	return {"userID": str(exampleUser["_id"]), "title": "New submission", "description": "Pushed a submission with a score of 14"}
+
+class EventTestCase(NYCSLTestCase):
+	def testGetAll(self):
+		assert b'[]' in self.app.get("/events").data
+
+		exampleEvent = generateExampleEvent(self.db)
+		self.db.event.insert_one(exampleEvent)
+		newEvent = json.loads(self.app.get("/events").data.decode("utf-8"))[0]
+		assert areDicsEqual(exampleEvent, newEvent)
+	def testGet(self):
+		assert self.app.get("/events/1").status_code == 404
+
+		exampleEvent = generateExampleEvent(self.db)
+		self.db.event.insert_one(exampleEvent)
+		newEvent = json.loads(self.app.get("/events/"+str(exampleEvent['_id'])).data.decode("utf-8"))
+		assert areDicsEqual(exampleEvent, newEvent)
+	def testPost(self):
+		exampleEvent = generateExampleEvent(self.db)
+
+		assert self.db.event.find_one(exampleEvent) is None
+
+		req = self.app.post("/events", data=json.dumps(exampleEvent), content_type="application/json")
+		assert req.status_code == 201
+
+		returnedEvent = json.loads(req.data.decode("utf-8"))
+		assert "_id" in returnedEvent
+		returnedEvent.pop("_id")
+
+		assert areDicsEqual(exampleEvent, returnedEvent)
+		assert self.db.event.find_one(exampleEvent) is not None
+	def testDelete(self):
+		exampleEvent = generateExampleEvent(self.db)
+		self.db.event.insert_one(exampleEvent)
+		self.app.delete("/events/"+str(exampleEvent["_id"]))
+		assert self.db.event.find_one(exampleEvent) is None
+
 EXAMPLE_PROBLEM = {"isAscending": True, "name": "Tetris", "description": "Write a bot to play the classic game Tetris"}
 
 class ProblemTestCase(NYCSLTestCase):

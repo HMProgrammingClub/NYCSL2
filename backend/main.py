@@ -153,7 +153,7 @@ class EventListAPI(Resource):
 		event = self.parser.parse_args()
 
 		try:
-			db.find_one({"_id": ObjectId(event['userID'])})
+			db.user.find_one({"_id": ObjectId(event['userID'])})
 		except:
 			abort(400)
 
@@ -168,7 +168,7 @@ class EventAPI(Resource):
 			event = db.event.find_one({"_id": ObjectId(eventID)})
 		except:
 			abort(404)
-		if user is None:
+		if event is None:
 			abort(404)
 		return jsonify(event)
 
@@ -332,8 +332,8 @@ api.add_resource(LoginAPI, '/login', endpoint='login')
 api.add_resource(UserListAPI, '/users', endpoint='users')
 api.add_resource(UserAPI, '/users/<userID>', endpoint='user')
 
-api.add_resource(UserListAPI, '/events', endpoint='events')
-api.add_resource(UserAPI, '/events/<eventID>', endpoint='event')
+api.add_resource(EventListAPI, '/events', endpoint='events')
+api.add_resource(EventAPI, '/events/<eventID>', endpoint='event')
 
 api.add_resource(ProblemListAPI, '/problems', endpoint='problems')
 api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
