@@ -110,7 +110,7 @@ var UserGrid = React.createClass({
 // i think it makes sense caus it lowers the number of requests
 // ex:
 
-$.get('/tempData/users.json', function (result) {
+$.get('http://' + location.hostname + ':5000/users', function (result) {
     var QualifiedData = result.filter(function(user) {
         return user.compositeScore != 0;
     });
