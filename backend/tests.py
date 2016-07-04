@@ -214,17 +214,6 @@ class EntryTestCase(NYCSLTestCase):
 
 		assert areDicsEqual(exampleEntry, returnedEntry)
 		assert self.db.entry.find_one(exampleEntry) is not None
-	def testPut(self):
-		exampleEntry = generateExampleEntry(self.db)
-		self.db.entry.insert_one(exampleEntry)
-
-		exampleEntry["score"] = 80980809
-		exampleEntry["_id"] = str(exampleEntry["_id"])
-
-		req = self.app.put("/entries/"+exampleEntry["_id"], data=json.dumps(exampleEntry), content_type="application/json")
-		returnedEntry = json.loads(req.data.decode("utf-8"))
-
-		assert areDicsEqual(returnedEntry, exampleEntry)
 
 	def testDelete(self):
 		exampleEntry = generateExampleEntry(self.db)

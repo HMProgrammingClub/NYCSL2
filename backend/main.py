@@ -198,7 +198,7 @@ class EntryListAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("problemID", type=str, required=True, location="json")
 		self.parser.add_argument("userID", type=str, required=True, location="json")
-		self.parser.add_argument("file", type=werkzeug.FileStorage, required=True, location="files")
+		self.parser.add_argument("file", type=FileStorage, required=True, location="files")
 		super(EntryListAPI, self).__init__()
 
 	def get(self):
@@ -236,7 +236,6 @@ class EntryAPI(Resource):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("problemID", type=str, location="json")
 		self.parser.add_argument("userID", type=str, location="json")
-		self.parser.add_argument("score", type=int, location="json")
 		super(EntryAPI, self).__init__()
 
 	def get(self, entryID):
@@ -246,22 +245,6 @@ class EntryAPI(Resource):
 			abort(404)
 		if entry is None:
 			abort(404)
-		return jsonify(entry)
-
-	def put(self, entryID):
-		try:
-			entry = db.entry.find_one({"_id": ObjectId(entryID)})
-		except:
-			abort(404)
-		if entry is None:
-			abort(404)
-
-		args = self.parser.parse_args()
-		for k, v in args.items():
-			if v is not None:
-				entry[k] = v
-
-		db.entry.save(entry)
 		return jsonify(entry)
 
 	def delete(self, entryID):
