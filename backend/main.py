@@ -25,7 +25,7 @@ config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
 
-SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}]
+SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "linkLead": "/blogs/", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
 GRADING_SCRIPT = "grade.py"
 CURRENT_SEASON = 0
@@ -276,12 +276,6 @@ class EntryListAPI(Resource):
 		return jsonify(structuredGradingOutput, status=status_code)
 
 class EntryAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("problemID", type=str, location="json")
-		self.parser.add_argument("userID", type=str, location="json")
-		super(EntryAPI, self).__init__()
-
 	def get(self, entryID):
 		try:
 			entry = db.entry.find_one({"_id": ObjectId(entryID)})
@@ -296,6 +290,20 @@ class EntryAPI(Resource):
 		if result.deleted_count < 1:
 			abort(404)
 		return jsonify({"result": True})
+
+class BlogListAPI(Resource):
+	def get(self):
+		return jsonify([a for a in db.blog.find({})])
+
+class BlogAPI(Resource):
+	def get(self, blogID):
+		try:
+			entry = db.blog.find_one({"_id": ObjectId(blogID)})
+		except:
+			abort(404)
+		if entry is None:
+			abort(404)
+		return jsonify(blog)
 
 class SearchAPI(Resource):
 	def __init__(self):
@@ -340,6 +348,9 @@ api.add_resource(ProblemAPI, '/problems/<problemID>', endpoint='problem')
 
 api.add_resource(EntryListAPI, '/entries', endpoint='entries')
 api.add_resource(EntryAPI, '/entries/<entryID>', endpoint='entry')
+
+api.add_resource(BlogListAPI, '/blogs', endpoint='blogs')
+api.add_resource(BlogAPI, '/blogs/<blogID>', endpoint='blog')
 
 api.add_resource(SearchAPI, '/search', endpoint='search')
 
