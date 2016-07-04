@@ -124,19 +124,17 @@ class UserAPI(Resource):
 			abort(404)
 
 		args = self.parser.parse_args()
+		try:
+			db.user.find_one({"_id": ObjectId(userID), "password": hashPassword(args["password"])})
+		except:
+			abort(400)
+
 		for k, v in args.items():
 			if v is not None:
 				user[k] = v
 
 		db.user.save(user)
 		return jsonify(user)
-
-	def delete(self, userID):
-		result = db.user.delete_one({"_id": ObjectId(userID)})
-		if result.deleted_count < 1:
-			abort(404)
-		return jsonify({"result": True})
-
 
 class EventListAPI(Resource):
 	def __init__(self):
@@ -172,40 +170,12 @@ class EventAPI(Resource):
 			abort(404)
 		return jsonify(event)
 
-	def delete(self, eventID):
-		result = db.event.delete_one({"_id": ObjectId(eventID)})
-		if result.deleted_count < 1:
-			abort(404)
-		return jsonify({"result": True})
-
 
 class ProblemListAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("isAscending", type=bool, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("description", type=str, required=True, location="json")
-		super(ProblemListAPI, self).__init__()
-
 	def get(self):
 		return jsonify([a for a in db.problem.find({})])
 
-	def post(self):
-		problem = self.parser.parse_args()
-		problem["season"] = CURRENT_SEASON
-
-		db.problem.insert_one(problem)
-
-		return jsonify(problem, status=201)
-
 class ProblemAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("isAscending", type=bool, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("description", type=str, location="json")
-		super(ProblemAPI, self).__init__()
-
 	def get(self, problemID):
 		try:
 			problem = db.problem.find_one({"_id": ObjectId(problemID)})
@@ -214,28 +184,6 @@ class ProblemAPI(Resource):
 		if problem is None:
 			abort(404)
 		return jsonify(problem)
-
-	def put(self, problemID):
-		try:
-			problem = db.problem.find_one({"_id": ObjectId(problemID)})
-		except:
-			abort(404)
-		if problem is None:
-			abort(404)
-
-		args = self.parser.parse_args()
-		for k, v in args.items():
-			if v is not None:
-				problem[k] = v
-
-		db.problem.save(problem)
-		return jsonify(problem)
-
-	def delete(self, problemID):
-		result = db.problem.delete_one({"_id": ObjectId(problemID)})
-		if result.deleted_count < 1:
-			abort(404)
-		return jsonify({"result": True})
 
 class EntryListAPI(Resource):
 	def __init__(self):
@@ -285,12 +233,6 @@ class EntryAPI(Resource):
 		if entry is None:
 			abort(404)
 		return jsonify(entry)
-
-	def delete(self, entryID):
-		result = db.entry.delete_one({"_id": ObjectId(entryID)})
-		if result.deleted_count < 1:
-			abort(404)
-		return jsonify({"result": True})
 
 class BlogListAPI(Resource):
 	def get(self):

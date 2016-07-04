@@ -124,13 +124,7 @@ class UserTestCase(NYCSLTestCase):
 		returnedUser = json.loads(req.data.decode("utf-8"))
 
 		assert areDicsEqual(returnedUser, exampleUser)
-
-	def testDelete(self):
-		exampleUser = copy.deepcopy(EXAMPLE_USER)
-		self.db.user.insert_one(exampleUser)
-		self.app.delete("/users/"+str(exampleUser["_id"]))
-		assert self.db.user.find_one(exampleUser) is None
-
+		
 def generateExampleEvent(db):
 	exampleUser = copy.deepcopy(EXAMPLE_USER)
 	db.user.insert_one(exampleUser)
@@ -166,11 +160,6 @@ class EventTestCase(NYCSLTestCase):
 
 		assert areDicsEqual(exampleEvent, returnedEvent)
 		assert self.db.event.find_one(exampleEvent) is not None
-	def testDelete(self):
-		exampleEvent = generateExampleEvent(self.db)
-		self.db.event.insert_one(exampleEvent)
-		self.app.delete("/events/"+str(exampleEvent["_id"]))
-		assert self.db.event.find_one(exampleEvent) is None
 
 EXAMPLE_PROBLEM = {"isAscending": True, "name": "Tetris", "description": "Write a bot to play the classic game Tetris"}
 
@@ -189,40 +178,6 @@ class ProblemTestCase(NYCSLTestCase):
 		self.db.problem.insert_one(exampleProblem)
 		newProblem = json.loads(self.app.get("/problems/"+str(exampleProblem['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleProblem, newProblem)
-	def testPost(self):
-		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
-
-		assert self.db.problem.find_one(exampleProblem) is None
-
-		req = self.app.post("/problems", data=json.dumps(exampleProblem), content_type="application/json")
-		assert req.status_code == 201
-
-		returnedProblem = json.loads(req.data.decode("utf-8"))
-		assert "_id" in returnedProblem
-		returnedProblem.pop("_id")
-
-		assert "season" in returnedProblem
-		returnedProblem.pop("season")
-
-		assert areDicsEqual(exampleProblem, returnedProblem)
-		assert self.db.problem.find_one(exampleProblem) is not None
-	def testPut(self):
-		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.problem.insert_one(exampleProblem)
-
-		exampleProblem["name"] = "A way different name"
-		exampleProblem["_id"] = str(exampleProblem["_id"])
-
-		req = self.app.put("/problems/"+exampleProblem["_id"], data=json.dumps(exampleProblem), content_type="application/json")
-		returnedProblem = json.loads(req.data.decode("utf-8"))
-
-		assert areDicsEqual(returnedProblem, exampleProblem)
-
-	def testDelete(self):
-		exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
-		self.db.problem.insert_one(exampleProblem)
-		self.app.delete("/problems/"+str(exampleProblem["_id"]))
-		assert self.db.problem.find_one(exampleProblem) is None
 
 INVALID_EXAMPLE_ENTRY = {"problemID": "incorrectproblemid", "userID": "incorrectuserid", "score": 12}
 
@@ -251,12 +206,6 @@ class EntryTestCase(NYCSLTestCase):
 		self.db.entry.insert_one(exampleEntry)
 		newEntry = json.loads(self.app.get("/entries/"+str(exampleEntry['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleEntry, newEntry)
-
-	def testDelete(self):
-		exampleEntry = generateExampleEntry(self.db)
-		self.db.entry.insert_one(exampleEntry)
-		self.app.delete("/entries/"+str(exampleEntry["_id"]))
-		assert self.db.problem.find_one(exampleEntry) is None
 
 EXAMPLE_BLOG = {"title": "Example Blog Post", "body": "Some random <b>html</b>"}
 
