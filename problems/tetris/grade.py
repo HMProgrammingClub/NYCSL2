@@ -213,4 +213,4 @@ if __name__ == '__main__':
         except RuntimeError as e:
             print(json.dumps({"error": str(e)}))
             sys.exit()
-        print(totalScore)
+        print(json.dumps({"score": totalScore}))
