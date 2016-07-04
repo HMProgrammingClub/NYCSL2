@@ -210,6 +210,7 @@ if __name__ == '__main__':
             for char in data:
                 if char != '\n':
                     totalScore += makeMove(char)
-        except Exception as e:
-            pass
-        print (totalScore)
+        except RuntimeError as e:
+            print(json.dumps({"error": str(e)}))
+            sys.exit()
+        print(totalScore)
