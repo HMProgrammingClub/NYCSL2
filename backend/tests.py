@@ -258,6 +258,24 @@ class EntryTestCase(NYCSLTestCase):
 		self.app.delete("/entries/"+str(exampleEntry["_id"]))
 		assert self.db.problem.find_one(exampleEntry) is None
 
+EXAMPLE_BLOG = {"title": "Example Blog Post", "body": "Some random <b>html</b>"}
+
+class BlogTestCase(NYCSLTestCase):
+	def testGetAll(self):
+		assert b'[]' in self.app.get("/blogs").data
+
+		exampleBlog = copy.deepcopy(EXAMPLE_BLOG)
+		self.db.blog.insert_one(exampleBlog)
+		newBlog = json.loads(self.app.get("/blogs").data.decode("utf-8"))[0]
+		assert areDicsEqual(exampleBlog, newBlog)
+	def testGet(self):
+		assert self.app.get("/blogs/1").status_code == 404
+
+		exampleBlog = copy.deepcopy(EXAMPLE_BLOG)
+		self.db.blog.insert_one(exampleBlog)
+		newBlog = json.loads(self.app.get("/blogs/"+str(exampleBlog['_id'])).data.decode("utf-8"))
+		assert areDicsEqual(exampleBlog, newBlog)
+
 class SearchTestCase(NYCSLTestCase):
 	def testGet(self):
 		assert b'[]' in self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
