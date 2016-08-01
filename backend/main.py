@@ -173,7 +173,7 @@ class EventAPI(Resource):
 
 class ProblemListAPI(Resource):
 	def get(self):
-		return jsonify([a for a in db.problem.find({}).sort('_id', pymongo.DESCENDING)])
+		return jsonify([a for a in db.problem.find({}).sort('_id', -1)])
 
 class ProblemAPI(Resource):
 	def get(self, problemID):
@@ -236,7 +236,7 @@ class EntryAPI(Resource):
 
 class BlogListAPI(Resource):
 	def get(self):
-		return jsonify([a for a in db.blog.find({}).sort('_id', pymongo.DESCENDING)])
+		return jsonify([a for a in db.blog.find({}).sort('_id', -1)])
 
 class BlogAPI(Resource):
 	def get(self, blogID):
