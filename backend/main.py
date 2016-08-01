@@ -272,7 +272,7 @@ class SearchAPI(Resource):
 				if len(searchResults) >= maxResults:
 					isDone = True
 					break
-				searchResults.append({"category": collectionAttrs["collectionName"], "title": res[collectionAttrs['nameField']], "link": collectionAttrs['linkLead']+str(res["_id"])})
+				searchResults.append({"category": collectionAttrs["collectionName"], "title": res[collectionAttrs['nameField']], "url": collectionAttrs['linkLead']+str(res["_id"])})
 
 		return jsonify(searchResults)
 
