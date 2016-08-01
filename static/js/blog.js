@@ -29,9 +29,9 @@ var Blog = React.createClass({
     }
 });
 
-$.get('/tempData/blogentries.json', function (result) {
+$.get('http://' + location.hostname + ':5000/blogs', function (result) {
     ReactDOM.render(
-        <Blog pages={2} page={1} entries={result} />,
+        <Blog pages={1} page={1} entries={result} />,
         document.getElementById('blogBox')
     );
 });
