@@ -166,17 +166,21 @@ var Jumbo = React.createClass({
     }
 });
 
-$.get('http://' + location.hostname + ':5000/entries', function (result) {
-	ReactDOM.render(
-	    <Leaderboard data={result} />,
-	    document.getElementById('leaderBoard')
-	);
-});
+var gameID = window.location.search.replace("?gameID=", "")
+gameID = (gameID) ? ("?gameID="+gameID) : "";
 
-$.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
-    var result = resultArr[3]
+$.get('http://' + location.hostname + ':5000/problems' + gameID, function (resultArr) {
+    var result = resultArr[0]
 	ReactDOM.render(
     	<Jumbo game={result.name} desc={result.desc} links={result.links} />,
     	document.getElementById('jumboBox')
 	);
+
+    var id = result.id;
+    $.get('http://' + location.hostname + ':5000/entries', function (result) {
+    	ReactDOM.render(
+    	    <Leaderboard data={result} id={id} />,
+    	    document.getElementById('leaderBoard')
+    	);
+    });
 });

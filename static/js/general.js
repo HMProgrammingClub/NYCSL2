@@ -14,7 +14,7 @@ var Sidebar = React.createClass({
         ];
 
         $('.ui.search').search({
-            source: dummySearchContent
+            source: this.props.searchContent
         });
     },
     gameList: function(games, active) {
@@ -180,10 +180,12 @@ var NavBar = React.createClass({
 });
 
 $.get('http://' + location.hostname + ':5000/problems', function (result) {
-    ReactDOM.render(
-        <Sidebar games={result} active={document.body.id} />,
-        document.getElementById('sidebarBox')
-    );
+    $.get('http://' + location.hostname + ':5000/search', function (content) {
+        ReactDOM.render(
+            <Sidebar games={result} active={document.body.id} searchContent={content} />,
+            document.getElementById('sidebarBox')
+        );
+    });
 });
 
 ReactDOM.render(

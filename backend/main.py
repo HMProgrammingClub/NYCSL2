@@ -173,7 +173,7 @@ class EventAPI(Resource):
 
 class ProblemListAPI(Resource):
 	def get(self):
-		return jsonify([a for a in db.problem.find({})])
+		return jsonify([a for a in db.problem.find({}).sort('_id', -1)])
 
 class ProblemAPI(Resource):
 	def get(self, problemID):
@@ -236,7 +236,7 @@ class EntryAPI(Resource):
 
 class BlogListAPI(Resource):
 	def get(self):
-		return jsonify([a for a in db.blog.find({})])
+		return jsonify([a for a in db.blog.find({}).sort('_id', -1)])
 
 class BlogAPI(Resource):
 	def get(self, blogID):
@@ -251,7 +251,7 @@ class BlogAPI(Resource):
 class SearchAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("query", type=str, required=True, location="json")
+		self.parser.add_argument("query", type=str, required=False, location="json")
 		self.parser.add_argument("maxResults", type=int, default=10, location="json")
 		super(SearchAPI, self).__init__()
 
@@ -272,7 +272,7 @@ class SearchAPI(Resource):
 				if len(searchResults) >= maxResults:
 					isDone = True
 					break
-				searchResults.append({"category": collectionAttrs["collectionName"], "name": res[collectionAttrs['nameField']], "link": collectionAttrs['linkLead']+str(res["_id"])})
+				searchResults.append({"category": collectionAttrs["collectionName"], "title": res[collectionAttrs['nameField']], "url": collectionAttrs['linkLead']+str(res["_id"])})
 
 		return jsonify(searchResults)
 
