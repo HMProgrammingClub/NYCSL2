@@ -8,7 +8,7 @@ Each month at midnight a new challenge is posted. Programmers in NYCSL have one 
 
 ## Contributing
 
-Send us a pull request. If you are looking for things to do, check out the repo's open issues. We will be happy to add you as a contributor and credit you in the README.
+Send us a pull request. If you are looking for things to do, check out the [repo's open issues](https://github.com/HMProgrammingClub/NYCSL2/issues). We will be happy to add you as a contributor and credit you in the README.
 
 If you find a bug or have any trouble with the website, please open an issue. We are happy to help you out.
 
