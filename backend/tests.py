@@ -227,7 +227,7 @@ class BlogTestCase(NYCSLTestCase):
 
 class SearchTestCase(NYCSLTestCase):
 	def testGet(self):
-		assert b'[]' in self.app.get("/search", query_string={"query": "thisshouldbeinnothing"}).data
+		assert {"results": []} == dict(self.app.get("/search", query_string={"query": "thisshouldbeinnothing"}).data)
 
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
