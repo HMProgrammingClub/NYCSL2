@@ -40,8 +40,8 @@ def hashPassword(password):
 class LoginAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
+		self.parser.add_argument("email", type=str, required=True, location="args")
+		self.parser.add_argument("password", type=str, required=True, location="args")
 		super(LoginAPI, self).__init__()
 
 	def get(self):
@@ -76,10 +76,10 @@ class LoginAPI(Resource):
 class UserListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("school", type=str, location="json")
+		self.parser.add_argument("email", type=str, required=True, location="args")
+		self.parser.add_argument("password", type=str, required=True, location="args")
+		self.parser.add_argument("name", type=str, required=True, location="args")
+		self.parser.add_argument("school", type=str, location="args")
 		super(UserListAPI, self).__init__()
 
 	def get(self):
@@ -99,11 +99,11 @@ class UserListAPI(Resource):
 class UserAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, location="json")
-		self.parser.add_argument("password", type=str, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		self.parser.add_argument("isVerified", type=str, location="json")
+		self.parser.add_argument("email", type=str, location="args")
+		self.parser.add_argument("password", type=str, location="args")
+		self.parser.add_argument("name", type=str, location="args")
+		self.parser.add_argument("school", type=str, location="args")
+		self.parser.add_argument("isVerified", type=str, location="args")
 		super(UserAPI, self).__init__()
 
 	def get(self, userID):
@@ -139,9 +139,9 @@ class UserAPI(Resource):
 class EventListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("userID", type=str, required=True, location="json")
-		self.parser.add_argument("title", type=str, required=True, location="json")
-		self.parser.add_argument("description", type=str, required=True, location="json")
+		self.parser.add_argument("userID", type=str, required=True, location="args")
+		self.parser.add_argument("title", type=str, required=True, location="args")
+		self.parser.add_argument("description", type=str, required=True, location="args")
 		super(EventListAPI, self).__init__()
 
 	def get(self):
@@ -188,8 +188,8 @@ class ProblemAPI(Resource):
 class EntryListAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("problemID", type=str, required=True, location="json")
-		self.parser.add_argument("userID", type=str, required=True, location="json")
+		self.parser.add_argument("problemID", type=str, required=True, location="args")
+		self.parser.add_argument("userID", type=str, required=True, location="args")
 		self.parser.add_argument("file", type=FileStorage, required=True, location="files")
 		super(EntryListAPI, self).__init__()
 
@@ -251,8 +251,8 @@ class BlogAPI(Resource):
 class SearchAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("query", type=str, required=False, location="json")
-		self.parser.add_argument("maxResults", type=int, default=10, location="json")
+		self.parser.add_argument("query", type=str, required=True, location="args")
+		self.parser.add_argument("maxResults", type=int, default=10, location="args")
 		super(SearchAPI, self).__init__()
 
 	def get(self):
