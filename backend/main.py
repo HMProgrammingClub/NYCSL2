@@ -276,7 +276,7 @@ class SearchAPI(Resource):
 
 		returnedResults = { "results" : {}}
 		for i in searchResults:
-			if [i['category']] in returnedResults['results'].keys():
+			if i['category'] in returnedResults['results'].keys():
 				returnedResults['results'][i['category']].append(i)
 			else:
 				returnedResults['results'].update({i['category']: [i]})
