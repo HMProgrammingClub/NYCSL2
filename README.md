@@ -14,4 +14,4 @@ If you find a bug or have any trouble with the website, please open an issue. We
 
 ### Authors
 
-NYCSL was created by [Michael Truell](https://github.com/truell20), [Joshua Gruenstein](https://github.com/joshuagruenstein) and [Ben Spector](https://github.com/Sydriax) for the Horace Mann Programming Club.
+NYCSL was created by [Michael Truell](https://github.com/truell20), [Joshua Gruenstein](https://github.com/joshuagruenstein) and [Henry Wildermuth](https://github.com/flyinggraysons) for the Horace Mann Programming Club.
