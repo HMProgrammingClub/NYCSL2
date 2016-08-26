@@ -13,9 +13,13 @@ var Sidebar = React.createClass({
             { title: 'Joshua Gruenstein', description: 'Horace Mann' }
         ];
 
-        $('.ui.search').search({
-            source: this.props.searchContent
-        });
+        $('.ui.search')
+          .search({
+            apiSettings: {
+              url: 'http://' + location.hostname + ':5000/search?query={query}'
+            },
+            type: 'category'
+          });
     },
     gameList: function(games, active) {
         var season = -1;
@@ -180,12 +184,10 @@ var NavBar = React.createClass({
 });
 
 $.get('http://' + location.hostname + ':5000/problems', function (result) {
-    $.get('http://' + location.hostname + ':5000/search', function (content) {
-        ReactDOM.render(
-            <Sidebar games={result} active={document.body.id} searchContent={content} />,
-            document.getElementById('sidebarBox')
-        );
-    });
+    ReactDOM.render(
+        <Sidebar games={result} active={document.body.id} />,
+        document.getElementById('sidebarBox')
+    );
 });
 
 ReactDOM.render(
