@@ -1,4 +1,6 @@
 #NYCSL
+[![Build Status](https://travis-ci.org/HMProgrammingClub/NYCSL2.svg?branch=master)](https://travis-ci.org/HMProgrammingClub/NYCSL2)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/HMProgrammingClub/NYCSL2/master/LICENSE)
 
 NYCSL, or the New York Computer Science League, is an online, high school programming competition.
 
