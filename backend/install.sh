@@ -1,5 +1,6 @@
 #!/bin/bash
 
+apt-get update -y
 apt-get install -y python3 python3-pip
 
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
