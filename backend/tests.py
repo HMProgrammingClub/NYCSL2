@@ -235,7 +235,7 @@ class SearchTestCase(NYCSLTestCase):
 		req = self.app.get("/search", query_string={"query": exampleUser['email']})
 		returnedResults = json.loads(req.data.decode("utf-8"))
 		correctResult = {"title": exampleUser["name"], "category": "user", "url": "/users/"+str(exampleUser["_id"])}
-		assert correctResult in returnedResults
+		assert correctResult in returnedResults['results']['user']['results']
 
 if __name__ == '__main__':
 	unittest.main()
