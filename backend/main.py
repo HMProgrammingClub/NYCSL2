@@ -279,7 +279,7 @@ class SearchAPI(Resource):
 			if i['category'] in returnedResults['results'].keys():
 				returnedResults['results'][i['category']]['results'].append(i)
 			else:
-				returnedResults['results'].update({i['category']: {'results': [i]}})
+				returnedResults['results'].update({i['category']: {'results': [i]}, name: i['category']})
 
 
 		return jsonify(returnedResults)
