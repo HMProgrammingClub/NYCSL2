@@ -274,7 +274,15 @@ class SearchAPI(Resource):
 					break
 				searchResults.append({"category": collectionAttrs["collectionName"], "title": res[collectionAttrs['nameField']], "url": collectionAttrs['linkLead']+str(res["_id"])})
 
-		return jsonify(searchResults)
+		returnedResults = { "results" : {}}
+		for i in searchResults:
+			if [i['category']] in returnedResults['results'].keys():
+				returnedResults['results'][i['category']].append(i)
+			else:
+				returnedResults['results'].update({i['category']: [i]})
+
+
+		return jsonify(returnedResults)
 
 api = Api(app)
 
