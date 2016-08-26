@@ -266,8 +266,8 @@ class SearchAPI(Resource):
 			if isDone: break
 
 			collection = db[collectionAttrs["collectionName"]]
-			# collection.create_index([("$**", TEXT)])
-			results = collection.find({})
+			collection.create_index([("$**", TEXT)])
+			results = collection.find({"$text": {"$search": query}})
 			for res in results:
 				if len(searchResults) >= maxResults:
 					isDone = True

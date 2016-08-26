@@ -124,7 +124,7 @@ class UserTestCase(NYCSLTestCase):
 		returnedUser = json.loads(req.data.decode("utf-8"))
 
 		assert areDicsEqual(returnedUser, exampleUser)
-		
+
 def generateExampleEvent(db):
 	exampleUser = copy.deepcopy(EXAMPLE_USER)
 	db.user.insert_one(exampleUser)
@@ -234,7 +234,7 @@ class SearchTestCase(NYCSLTestCase):
 
 		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
 		returnedResults = json.loads(req.data.decode("utf-8"))
-		correctResult = {"name": exampleUser["name"], "category": "user", "link": "/users/"+str(exampleUser["_id"])}
+		correctResult = {"title": exampleUser["name"], "category": "user", "url": "/users/"+str(exampleUser["_id"])}
 		assert correctResult in returnedResults
 
 if __name__ == '__main__':
