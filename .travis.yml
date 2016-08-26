@@ -7,9 +7,7 @@ install:
 
 script:
 - cd ~/build/HMProgrammingClub/NYCSL2/
-- echo "[BACKEND]" >> nycsl.ini
-- echo "secretKey = random_secret_key" >> nycsl.ini
-- echo "salt = random_salt" >> nycsl.ini
+- cp travis.ini nycsl.ini
 - cd backend
 - sudo ./runTests.sh
 
