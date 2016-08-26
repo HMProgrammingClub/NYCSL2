@@ -53,16 +53,16 @@ class LoginTestCase(NYCSLTestCase):
 		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
 		exampleUser["password"] = main.hashPassword(exampleUser["password"])
 
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
+		assert self.app.post("/login", query_string=loginInfo).status_code == 400
 
 		self.db.user.insert_one(exampleUser)
-		req = self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json")
+		req = self.app.post("/login", query_string=loginInfo)
 		assert req.status_code == 201
 		assert areDicsEqual(json.loads(req.data.decode("utf-8")), exampleUser)
 		with self.app.session_transaction() as session:
 			assert session["userID"] == str(exampleUser["_id"])
 
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 409
+		assert self.app.post("/login", query_string=loginInfo).status_code == 409
 
 	def testDelete(self):
 		assert self.app.delete("/login").status_code == 404
@@ -90,7 +90,7 @@ class UserTestCase(NYCSLTestCase):
 
 		assert self.db.user.find_one(exampleUser) is None
 
-		req = self.app.post("/users", data=json.dumps(exampleUser), content_type="application/json")
+		req = self.app.post("/users", query_string=exampleUser)
 		assert req.status_code == 201
 
 		returnedUser = json.loads(req.data.decode("utf-8"))
@@ -120,7 +120,7 @@ class UserTestCase(NYCSLTestCase):
 		exampleUser["name"] = "A way different name"
 		exampleUser["_id"] = str(exampleUser["_id"])
 
-		req = self.app.put("/users/"+exampleUser["_id"], data=json.dumps(exampleUser), content_type="application/json")
+		req = self.app.put("/users/"+exampleUser["_id"], query_string=exampleUser)
 		returnedUser = json.loads(req.data.decode("utf-8"))
 
 		assert areDicsEqual(returnedUser, exampleUser)
@@ -151,7 +151,7 @@ class EventTestCase(NYCSLTestCase):
 
 		assert self.db.event.find_one(exampleEvent) is None
 
-		req = self.app.post("/events", data=json.dumps(exampleEvent), content_type="application/json")
+		req = self.app.post("/events", query_string=exampleEvent)
 		assert req.status_code == 201
 
 		returnedEvent = json.loads(req.data.decode("utf-8"))
@@ -227,12 +227,12 @@ class BlogTestCase(NYCSLTestCase):
 
 class SearchTestCase(NYCSLTestCase):
 	def testGet(self):
-		assert b'[]' in self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
+		assert b'[]' in self.app.get("/search", query_string={"query": "thisshouldbeinnothing"}).data
 
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 
-		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
+		req = self.app.get("/search", query_string={"query": exampleUser['email']})
 		returnedResults = json.loads(req.data.decode("utf-8"))
 		correctResult = {"title": exampleUser["name"], "category": "user", "url": "/users/"+str(exampleUser["_id"])}
 		assert correctResult in returnedResults
