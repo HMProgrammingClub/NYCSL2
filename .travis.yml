@@ -1,5 +1,7 @@
 sudo: true
 
+language: generic
+
 install:
 - cd ~/build/HMProgrammingClub/NYCSL2/backend
 - sudo ./install.sh
