@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <title>NYCSL Signup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
+    <style>
+        body, .grid {
+            height:100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="ui middle aligned center aligned grid">
+    <div class="ui column twelve wide">
+        <div class="ui hidden negative message">
+            <i class="close icon"></i>
+            <div class="header">
+                Verification failed
+            </div>
+            <p>Maybe your verification code is incorrect?</p>
+        </div>
+
+        <div class="ui raised text segment left aligned">
+            <h2>NYCSL Signup: Verification</h2>
+            <p>To complete your registration, please enter the verification code for your school.</p>
+            <div class="ui large fluid action input">
+                <input type="text" placeholder="Code" id="code">
+                <button class="ui teal button" onclick="verify()">Verify</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function verify() {
+        var code = $("#code").val();
+        var githubID = window.location.href.split("#")[1];
+        
+        $.ajax({
+            type: 'POST',
+            url: 'http://' + location.hostname + ':5000/login',
+            data: {"id":githubID, "code":code},
+            contentType: "application/json",
+            dataType: 'json',
+            success: function() {
+                window.location.replace("http://"+window.location.hostname);
+            }, error: function() {
+                $('.message').removeClass('hidden').addClass("visible");
+                $('.message .close').on('click', function() {
+                    $(this).closest('.message').removeClass('visible').addClass('hidden'); 
+                });
+            }
+        });
+
+    }
+</script>
+
+</body>
+</html>
