@@ -27,11 +27,11 @@ var Sidebar = React.createClass({
                         <div className="ui horizontal divider inverted fitted">
                             {"Season " + game.season}
                         </div>
-                        <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
+                        <a href={"/#"+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
                     </div>
                 );
             } else return (
-                <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")} key={game.id}>{game.name}</a>
+                <a href={"/#"+game.id} className={"item" + (active===game.id?" active":"")} key={game.id}>{game.name}</a>
             );
         });
     },
