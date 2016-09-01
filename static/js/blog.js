@@ -18,7 +18,7 @@ var Blog = React.createClass({
                     return (
                         <div className="blogEntry" key={entry.id}>
                             <h1 className="header">{entry.title}</h1>
-                            <h3 className="author">by <a href={"/student/" + entry.author.username}>{entry.author.name}</a></h3>
+                            <h3 className="author">by <a href={"/users?u=" + entry.author.id}>{entry.author.name}</a></h3>
                             <h4 className="date">{entry.date}</h4>
                             <div className="content" dangerouslySetInnerHTML={{__html: entry.body}}></div>
                         </div>
@@ -29,9 +29,9 @@ var Blog = React.createClass({
     }
 });
 
-$.get('/tempData/blogentries.json', function (result) {
+$.get('http://' + location.hostname + ':5000/blogs', function (result) {
     ReactDOM.render(
-        <Blog pages={2} page={1} entries={result} />,
+        <Blog pages={1} page={1} entries={result} />,
         document.getElementById('blogBox')
     );
 });
