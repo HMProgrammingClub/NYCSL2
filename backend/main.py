@@ -247,13 +247,7 @@ class BlogListAPI(Resource):
 class BlogAPI(Resource):
 	def get(self, blogID):
 		try:
-			queryString = "url"
-			try:
-				blogID = int(blogID)
-				queryString = "id"
-			except Exception as e:
-				pass
-			blog = db.blog.find_one({queryString: blogID})
+			blog = db.blog.find_one({"_id": ObjectId(blogID)})
 		except:
 			abort(404)
 		if blog is None:
