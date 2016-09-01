@@ -25,7 +25,7 @@ config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
 
-SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "categoryName": "User", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "categoryName": "Problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "categoryName": "Blog", "linkLead": "/blogs/", "nameField": "title"}]
+SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "categoryName": "User", "linkLead": "/users/?", "nameField": "name"}, {"collectionName": "problem", "categoryName": "Problem", "linkLead": "/problems/?", "nameField": "name"}, {"collectionName": "blog", "categoryName": "Blog", "linkLead": "/blogs/?", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
 GRADING_SCRIPT = "grade.py"
 CURRENT_SEASON = 0
