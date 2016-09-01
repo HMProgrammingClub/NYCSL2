@@ -29,7 +29,9 @@ var Blog = React.createClass({
     }
 });
 
-$.get('http://' + location.hostname + ':5000/blogs', function (result) {
+var blogID = window.location.href.split("?")[1];
+
+$.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
     ReactDOM.render(
         <Blog pages={1} page={1} entries={result} />,
         document.getElementById('blogBox')
