@@ -33,42 +33,7 @@ class NYCSLTestCase(unittest.TestCase):
 	def tearDown(self):
 		MongoClient().drop_database("test")
 
-EXAMPLE_USER = {"email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
-
-class LoginTestCase(NYCSLTestCase):
-	def testGet(self):
-		assert json.loads(self.app.get("/login").data.decode("utf-8")) == {"loggedIn": False}
-		exampleUser = copy.deepcopy(EXAMPLE_USER)
-		self.db.user.insert_one(exampleUser)
-
-		with self.app.session_transaction() as session:
-			session["userID"] = str(exampleUser["_id"])
-
-		response = json.loads(self.app.get("/login").data.decode("utf-8"))
-		assert response["loggedIn"] == True
-		assert areDicsEqual(response["user"], exampleUser)
-
-	def testPost(self):
-		exampleUser = copy.deepcopy(EXAMPLE_USER)
-		loginInfo = {"email": exampleUser["email"], "password": exampleUser["password"]}
-		exampleUser["password"] = main.hashPassword(exampleUser["password"])
-
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 400
-
-		self.db.user.insert_one(exampleUser)
-		req = self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json")
-		assert req.status_code == 201
-		assert areDicsEqual(json.loads(req.data.decode("utf-8")), exampleUser)
-		with self.app.session_transaction() as session:
-			assert session["userID"] == str(exampleUser["_id"])
-
-		assert self.app.post("/login", data=json.dumps(loginInfo), content_type="application/json").status_code == 409
-
-	def testDelete(self):
-		assert self.app.delete("/login").status_code == 404
-		with self.app.session_transaction() as session:
-			session["userID"] = str("RANDOM_PLACEHOLDER_ID")
-		assert json.loads(self.app.delete("/login").data.decode("utf-8")) == {"result": True}
+EXAMPLE_USER = {"_id": "1", "email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
 
 class UserTestCase(NYCSLTestCase):
 	def testGetAll(self):
@@ -78,6 +43,7 @@ class UserTestCase(NYCSLTestCase):
 		self.db.user.insert_one(exampleUser)
 		newUser = json.loads(self.app.get("/users").data.decode("utf-8"))[0]
 		assert areDicsEqual(exampleUser, newUser)
+
 	def testGet(self):
 		assert self.app.get("/users/1").status_code == 404
 
@@ -85,45 +51,6 @@ class UserTestCase(NYCSLTestCase):
 		self.db.user.insert_one(exampleUser)
 		newUser = json.loads(self.app.get("/users/"+str(exampleUser['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleUser, newUser)
-	def testPost(self):
-		exampleUser = copy.deepcopy(EXAMPLE_USER)
-
-		assert self.db.user.find_one(exampleUser) is None
-
-		req = self.app.post("/users", data=json.dumps(exampleUser), content_type="application/json")
-		assert req.status_code == 201
-
-		returnedUser = json.loads(req.data.decode("utf-8"))
-		assert "_id" in returnedUser
-		returnedUser.pop("_id")
-
-		assert "joinDate" in returnedUser
-		try:
-			datetime.datetime.strptime(returnedUser["joinDate"], '%Y-%m-%d')
-		except:
-			assert False
-		returnedUser.pop("joinDate")
-
-		assert "isVerified" in returnedUser
-		returnedUser.pop("isVerified")
-
-		assert returnedUser["password"] != exampleUser["password"]
-		returnedUser.pop("password")
-		exampleUser.pop("password")
-
-		assert areDicsEqual(exampleUser, returnedUser)
-		assert self.db.user.find_one(exampleUser) is not None
-	def testPut(self):
-		exampleUser = copy.deepcopy(EXAMPLE_USER)
-		self.db.user.insert_one(exampleUser)
-
-		exampleUser["name"] = "A way different name"
-		exampleUser["_id"] = str(exampleUser["_id"])
-
-		req = self.app.put("/users/"+exampleUser["_id"], data=json.dumps(exampleUser), content_type="application/json")
-		returnedUser = json.loads(req.data.decode("utf-8"))
-
-		assert areDicsEqual(returnedUser, exampleUser)
 
 def generateExampleEvent(db):
 	exampleUser = copy.deepcopy(EXAMPLE_USER)

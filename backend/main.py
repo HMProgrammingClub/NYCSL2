@@ -10,9 +10,6 @@ from pymongo import MongoClient, TEXT
 
 import configparser
 
-import hashlib
-from base64 import b64encode
-
 import subprocess
 import shlex
 
@@ -37,11 +34,6 @@ CURRENT_SEASON = 0
 
 db = MongoClient().nycsl
 
-def hashPassword(password):
-	passbits = password.encode('utf-8')
-	saltbits = SALT.encode('utf-8')
-	return b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
-
 class LoginAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
@@ -49,7 +41,7 @@ class LoginAPI(Resource):
 		super(LoginAPI, self).__init__()
 
 	def get(self):
-		code = self.parser.parse_args()
+		code = self.parser.parse_args()["code"]
 		response = json.loads(requests.post("https://github.com/login/oauth/access_token", json={"code": code, "client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET}).text)
 
 		accessToken = response["access_token"]
@@ -68,12 +60,6 @@ class LoginAPI(Resource):
 
 
 class SessionAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		super(LoginAPI, self).__init__()
-
 	def get(self):
 		if "userID" not in session:
 			return jsonify({"loggedIn": False})
@@ -92,38 +78,10 @@ class SessionAPI(Resource):
 		return jsonify({"result": True})
 
 class UserListAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		super(UserListAPI, self).__init__()
-
 	def get(self):
 		return jsonify([a for a in db.user.find({})])
 
-	def post(self):
-		user = self.parser.parse_args()
-		user["isVerified"] = False
-		user["joinDate"] = datetime.datetime.today().strftime('%Y-%m-%d')
-		user["password"] = hashPassword(user["password"])
-
-		db.user.insert_one(user)
-
-		return jsonify(user, status=201)
-
-
 class UserAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, location="json")
-		self.parser.add_argument("password", type=str, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		self.parser.add_argument("isVerified", type=str, location="json")
-		super(UserAPI, self).__init__()
-
 	def get(self, userID):
 		try:
 			user = db.user.find_one({"_id": userID})
@@ -133,26 +91,6 @@ class UserAPI(Resource):
 			abort(404)
 		return jsonify(user)
 
-	def put(self, userID):
-		try:
-			user = db.user.find_one({"_id": userID})
-		except:
-			abort(404)
-		if user is None:
-			abort(404)
-
-		args = self.parser.parse_args()
-		try:
-			db.user.find_one({"_id": userID, "password": hashPassword(args["password"])})
-		except:
-			abort(400)
-
-		for k, v in args.items():
-			if v is not None:
-				user[k] = v
-
-		db.user.save(user)
-		return jsonify(user)
 
 class EventListAPI(Resource):
 	def __init__(self):
