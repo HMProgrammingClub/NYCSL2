@@ -234,6 +234,7 @@ class SearchTestCase(NYCSLTestCase):
 
 		req = self.app.get("/search", query_string={"query": exampleUser['email']})
 		returnedResults = json.loads(req.data.decode("utf-8"))
+
 		correctResult = {"results": {"user": {"name": "User", "results": [{"title": exampleUser["name"], "url": "/users/?"+str(exampleUser["_id"])}]}}}
 		assert correctResult == returnedResults
 
