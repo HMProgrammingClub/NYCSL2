@@ -1,20 +1,9 @@
 var Sidebar = React.createClass({
     componentDidMount: function() {
-        /* Look up categories in semantic search.
-         * For some reason they can't run locally,
-         * but we'll use them with our API to
-         * seperate users, problems, and blog posts.
-         * For the moment though, they're together.
-         */
-
-        var dummySearchContent = [
-            { title: 'Traveling Salesman Problem', description: 'Find the optimal route through a set of 500 points in 3D space.' },
-            { title: 'Tron: A Postmortem', description: 'by Jake Sanders' },
-            { title: 'Joshua Gruenstein', description: 'Horace Mann' }
-        ];
-
         $('.ui.search').search({
-            source: this.props.searchContent
+            apiSettings: {
+           		url: 'http://' + location.hostname + ':5000/search?query={query}'
+            }, type: 'category'
         });
     },
     gameList: function(games, active) {
@@ -27,11 +16,11 @@ var Sidebar = React.createClass({
                         <div className="ui horizontal divider inverted fitted">
                             {"Season " + game.season}
                         </div>
-                        <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
+                        <a href={"/?"+game.id} className={"item" + (active===game.id?" active":"")}>{game.name}</a>
                     </div>
                 );
             } else return (
-                <a href={"/?game="+game.id} className={"item" + (active===game.id?" active":"")} key={game.id}>{game.name}</a>
+                <a href={"/?"+game.id} className={"item" + (active===game.id?" active":"")} key={game.id}>{game.name}</a>
             );
         });
     },

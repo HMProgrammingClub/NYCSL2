@@ -166,13 +166,14 @@ var Jumbo = React.createClass({
     }
 });
 
-var gameID = window.location.search.replace("?gameID=", "")
-gameID = (gameID) ? ("?gameID="+gameID) : "";
-
-$.get('http://' + location.hostname + ':5000/problems' + gameID, function (resultArr) {
-    var result = resultArr[0]
-	ReactDOM.render(
-    	<Jumbo game={result.name} desc={result.desc} links={result.links} />,
+var gameID = window.location.href.split("?")[1];
+$.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
+	var result = resultArr.find(function(problem) {
+    	return problem.id == gameID;
+	}); if (!result) result = resultArr[0];
+		
+    ReactDOM.render(
+		<Jumbo game={result.name} desc={result.desc} links={result.links} />,
     	document.getElementById('jumboBox')
 	);
 
