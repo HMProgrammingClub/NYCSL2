@@ -33,7 +33,8 @@ class NYCSLTestCase(unittest.TestCase):
 	def tearDown(self):
 		MongoClient().drop_database("test")
 
-EXAMPLE_USER = {"_id": "1", "email": "test@gmail.com", "name": "Michael Truell", "school": "Horace Mann", "password": "dummyPassword"}
+EXAMPLE_USER = {"_id": "1", "name": "Michael Truell"}
+EXAMPLE_SCHOOL = {"_id": "asdlfkj", "name": "Horace Mann School"}
 
 class UserTestCase(NYCSLTestCase):
 	def testGetAll(self):
@@ -51,6 +52,32 @@ class UserTestCase(NYCSLTestCase):
 		self.db.user.insert_one(exampleUser)
 		newUser = json.loads(self.app.get("/users/"+str(exampleUser['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleUser, newUser)
+
+	def testPost(self):
+		exampleUser = copy.deepcopy(EXAMPLE_USER)
+		exampleSchool = copy.deepcopy(EXAMPLE_SCHOOL)
+
+		assert self.db.user.find_one(exampleUser) is None
+
+		# Try posting without having logged in via github
+		args = {"schoolID": exampleSchool["_id"], "userID": exampleUser["_id"]}
+		req = self.app.post("/users", data=json.dumps(args), content_type="application/json")
+		assert req.status_code == 400
+
+		# Fake github login
+		self.db.tempUser.insert_one(exampleUser)
+		self.db.school.insert_one(exampleSchool)
+
+		req = self.app.post("/users", data=json.dumps(args), content_type="application/json")
+		assert req.status_code == 201
+
+		returnedUser = json.loads(req.data.decode("utf-8"))
+
+		assert returnedUser["schoolID"] == exampleSchool["_id"]
+		returnedUser.pop("schoolID")
+
+		assert areDicsEqual(exampleUser, returnedUser)
+		assert self.db.user.find_one(exampleUser) is not None
 
 def generateExampleEvent(db):
 	exampleUser = copy.deepcopy(EXAMPLE_USER)
@@ -159,7 +186,7 @@ class SearchTestCase(NYCSLTestCase):
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 
-		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
+		req = self.app.get("/search", data=json.dumps({"query": exampleUser['name']}), content_type="application/json")
 		returnedResults = json.loads(req.data.decode("utf-8"))
 		correctResult = {"title": exampleUser["name"], "category": "user", "url": "/users/"+str(exampleUser["_id"])}
 		assert correctResult in returnedResults

@@ -35,13 +35,11 @@ CURRENT_SEASON = 0
 db = MongoClient().nycsl
 
 class LoginAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("code", type=str, required=True, location="json")
-		super(LoginAPI, self).__init__()
-
 	def get(self):
-		code = self.parser.parse_args()["code"]
+		parser = reqparse.RequestParser()
+		parser.add_argument("code", type=str, required=True, location="json")
+		code = parser.parse_args()["code"]
+
 		response = json.loads(requests.post("https://github.com/login/oauth/access_token", json={"code": code, "client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET}).text)
 
 		accessToken = response["access_token"]
@@ -49,15 +47,13 @@ class LoginAPI(Resource):
 
 		dbUser = db.user.find_one({"_id": githubUser['id']})
 		if dbUser is None:
-			newUser = {"_id": githubUser["id"], "username": githubUser['username'], "joinDate": datetime.datetime.today().strftime('%Y-%m-%d')}
-			db.user.insert_one(newUser)
-			session['userID'] = newUser["_id"]
+			newUser = {"_id": githubUser["id"], "name": githubUser['username'], "joinDate": datetime.datetime.today().strftime('%Y-%m-%d')}
+			db.tempUser.insert_one(newUser)
 
 			return jsonify({ "loggedIn": True, "user": newUser })
 		else:
 			session['userID'] = dbUser["_id"]
 			return jsonify({ "loggedIn": True, "user": user })
-
 
 class SessionAPI(Resource):
 	def get(self):
@@ -80,6 +76,26 @@ class SessionAPI(Resource):
 class UserListAPI(Resource):
 	def get(self):
 		return jsonify([a for a in db.user.find({})])
+
+	def post(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument("schoolID", type=str, required=True, location="json")
+		parser.add_argument("userID", type=str, required=True, location="json")
+
+		args = parser.parse_args()
+
+		user = db.tempUser.find_one({"_id": args["userID"]})
+		if user is None: abort(400)
+
+		school = db.school.find_one({"_id": args["schoolID"]})
+		if school is None: abort(400)
+
+		user["schoolID"] = args["schoolID"]
+
+		db.user.insert_one(user)
+		session['userID'] = user["_id"]
+
+		return jsonify(user, status=201)
 
 class UserAPI(Resource):
 	def get(self, userID):
