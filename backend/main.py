@@ -18,12 +18,17 @@ import shlex
 
 import datetime
 
+import requests
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
 config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
+
+GITHUB_CLIENT_ID= config["BACKEND"]["githubClientID"]
+GITHUB_CLIENT_SECRET = config["BACKEND"]["githubClientSecret"]
 
 SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "linkLead": "/blogs/", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
@@ -38,6 +43,29 @@ def hashPassword(password):
 	return b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
 
 class LoginAPI(Resource):
+	def __init__(self):
+		self.parser = reqparse.RequestParser()
+		self.parser.add_argument("code", type=str, required=True, location="json")
+		super(LoginAPI, self).__init__()
+
+	def get(self):
+		code = self.parser.parse_args()
+		response = json.loads(requests.post("https://github.com/login/oauth/access_token", json={"code": code, "client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET}).text)
+
+		accessToken = response["access_token"]
+		githubUser = json.loads(requests.get("https://api.github.com/user", data={"access_token": accessToken}).text)
+
+		user = db.user.find_one({"githubID": githubUser['id']})
+		if user is None:
+			# New user
+			session.pop("userID")
+			return jsonify({"loggedIn": False})
+		else:
+
+		return jsonify({ "loggedIn": True, "user": user })
+
+
+class SessionAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument("email", type=str, required=True, location="json")
