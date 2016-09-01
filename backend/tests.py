@@ -223,7 +223,7 @@ class EntryTestCase(NYCSLTestCase):
 		newEntry = json.loads(self.app.get("/entries/"+str(exampleEntry['_id'])).data.decode("utf-8"))
 		assert areDicsEqual(exampleEntry, newEntry)
 
-EXAMPLE_BLOG = {"title": "Example Blog Post", "body": "Some random <b>html</b>"}
+EXAMPLE_BLOG = {"_id": "example-blog-post", "title": "Example Blog Post", "body": "Some random <b>html</b>"}
 
 class BlogTestCase(NYCSLTestCase):
 	def testGetAll(self):
