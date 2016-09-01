@@ -251,8 +251,8 @@ class BlogAPI(Resource):
 class SearchAPI(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("query", type=str, required=False, location="json")
-		self.parser.add_argument("maxResults", type=int, default=10, location="json")
+		self.parser.add_argument("query", type=str, required=False, location="args")
+		self.parser.add_argument("maxResults", type=int, default=10, location="args")
 		super(SearchAPI, self).__init__()
 
 	def get(self):

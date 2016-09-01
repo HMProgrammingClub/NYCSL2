@@ -227,12 +227,12 @@ class BlogTestCase(NYCSLTestCase):
 
 class SearchTestCase(NYCSLTestCase):
 	def testGet(self):
-		assert b'{"results": {}}' == self.app.get("/search", data=json.dumps({"query": "thisshouldbeinnothing"}), content_type="application/json").data
+		assert b'{"results": {}}' == self.app.get("/search", query_string={"query": "thisshouldbeinnothing"}).data
 
 		exampleUser = copy.deepcopy(EXAMPLE_USER)
 		self.db.user.insert_one(exampleUser)
 
-		req = self.app.get("/search", data=json.dumps({"query": exampleUser['email']}), content_type="application/json")
+		req = self.app.get("/search", query_string={"query": exampleUser['email']})
 		returnedResults = json.loads(req.data.decode("utf-8"))
 		correctResult = {"title": exampleUser["name"], "category": "user", "url": "/users/"+str(exampleUser["_id"])}
 		assert correctResult in returnedResults['results']['user']['results']
