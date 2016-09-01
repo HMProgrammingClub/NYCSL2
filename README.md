@@ -18,7 +18,7 @@ Then, install the backend:
 
 Then, run the backend: 
 
-```$ sudo ./start.sh```.
+```$ sudo ./start.sh```
 
 If you would like to make sure that the backend is working as planned, you can run our test suite:
 
