@@ -166,41 +166,21 @@ var Jumbo = React.createClass({
     }
 });
 
-function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if(pair[0] == variable){return pair[1];}
-    }
-    return(false);
-}
-
-var gameID = getQueryVariable("gameID")
+var gameID = window.location.search.replace("?gameID=", "")
 gameID = (gameID) ? ("?gameID="+gameID) : "";
-var game = getQueryVariable("game")
 
 $.get('http://' + location.hostname + ':5000/problems' + gameID, function (resultArr) {
-    if (game) {
-        result = resultArr[0]
-        for (var games in resultArr) {
-            if (games.id==game) {
-                result = games
-            }
-        }
-    } else {
-        var result = resultArr[0]
-    }
-    ReactDOM.render(
-        <Jumbo game={result.name} desc={result.desc} links={result.links} />,
-        document.getElementById('jumboBox')
-    );
+    var result = resultArr[0]
+	ReactDOM.render(
+    	<Jumbo game={result.name} desc={result.desc} links={result.links} />,
+    	document.getElementById('jumboBox')
+	);
 
     var id = result.id;
     $.get('http://' + location.hostname + ':5000/entries', function (result) {
-        ReactDOM.render(
-            <Leaderboard data={result} id={id} />,
-            document.getElementById('leaderBoard')
-        );
+    	ReactDOM.render(
+    	    <Leaderboard data={result} id={id} />,
+    	    document.getElementById('leaderBoard')
+    	);
     });
 });

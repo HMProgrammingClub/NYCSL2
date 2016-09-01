@@ -12,11 +12,11 @@ First, clone the repository:
 
 ```$ git clone https://github.com/HMProgrammingClub/NYCSL2.git```
 
-Then, install the backend:
+Then, install the backend: 
 
 ```$ cd NYCSL2/backend && sudo ./install.sh```
 
-Then, run the backend:
+Then, run the backend: 
 
 ```$ sudo ./start.sh```
 
@@ -32,4 +32,6 @@ If you find a bug or have any trouble with the website, please open an issue. We
 
 ### Authors
 
-NYCSL was created by [Michael Truell](https://github.com/truell20), [Joshua Gruenstein](https://github.com/joshuagruenstein), [Henry Wildermuth](https://github.com/flyinggraysons), and [Ben Spector](https://github.com/Sydriax) for the Horace Mann Programming Club.
+NYCSL was created by [Michael Truell](https://github.com/truell20)\*, [Joshua Gruenstein](https://github.com/joshuagruenstein)\*, [Henry Wildermuth](https://github.com/flyinggraysons), and [Ben Spector](https://github.com/Sydriax) for the Horace Mann Programming Club.
+
+\* These authors contributed equally to this work
