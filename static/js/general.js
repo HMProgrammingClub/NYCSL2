@@ -1,25 +1,10 @@
 var Sidebar = React.createClass({
     componentDidMount: function() {
-        /* Look up categories in semantic search.
-         * For some reason they can't run locally,
-         * but we'll use them with our API to
-         * seperate users, problems, and blog posts.
-         * For the moment though, they're together.
-         */
-
-        var dummySearchContent = [
-            { title: 'Traveling Salesman Problem', description: 'Find the optimal route through a set of 500 points in 3D space.' },
-            { title: 'Tron: A Postmortem', description: 'by Jake Sanders' },
-            { title: 'Joshua Gruenstein', description: 'Horace Mann' }
-        ];
-
-        $('.ui.search')
-          .search({
+        $('.ui.search').search({
             apiSettings: {
-              url: 'http://' + location.hostname + ':5000/search?query={query}'
-            },
-            type: 'category'
-          });
+           		url: 'http://' + location.hostname + ':5000/search?query={query}'
+            }, type: 'category'
+        });
     },
     gameList: function(games, active) {
         var season = -1;
