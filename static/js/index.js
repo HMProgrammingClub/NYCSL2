@@ -166,7 +166,7 @@ var Jumbo = React.createClass({
     }
 });
 
-var gameID = window.location.href.split("#")[1];
+var gameID = window.location.href.split("?")[1];
 $.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
 	var result = resultArr.find(function(problem) {
     	return problem.id == gameID;
