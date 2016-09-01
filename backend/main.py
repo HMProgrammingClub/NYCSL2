@@ -25,7 +25,7 @@ config.read("../nycsl.ini")
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
 
-SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "linkLead": "/blogs/", "nameField": "title"}]
+SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "categoryName": "User", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "categoryName": "Problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "categoryName": "Blog", "linkLead": "/blogs/", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
 GRADING_SCRIPT = "grade.py"
 CURRENT_SEASON = 0
@@ -260,29 +260,27 @@ class SearchAPI(Resource):
 		query = args["query"]
 		maxResults = args["maxResults"]
 
-		searchResults = []
+		searchResults = {}
 		isDone = False
 		for collectionAttrs in SEARCHABLE_COLLECTION_ATTRIBUTES:
 			if isDone: break
 
+			collectionResults = []
+
 			collection = db[collectionAttrs["collectionName"]]
 			collection.create_index([("$**", TEXT)])
-			results = collection.find({"$text": {"$search": query}})
-			for res in results:
+			rawCollectionResults = collection.find({"$text": {"$search": query}})
+
+			for res in rawCollectionResults:
 				if len(searchResults) >= maxResults:
 					isDone = True
 					break
-				searchResults.append({"category": collectionAttrs["collectionName"], "title": res[collectionAttrs['nameField']], "url": collectionAttrs['linkLead']+str(res["_id"])})
+				collectionResults.append({"title": res[collectionAttrs['nameField']], "url": collectionAttrs['linkLead']+str(res["_id"])})
 
-		returnedResults = { "results" : {}}
-		for i in searchResults:
-			if i['category'] in returnedResults['results'].keys():
-				returnedResults['results'][i['category']]['results'].append(i)
-			else:
-				returnedResults['results'].update({i['category']: {'results': [i], 'name': i['category']}})
+			if len(collectionResults) > 0:
+				searchResults[collectionAttrs["collectionName"]] = {"name": collectionAttrs["categoryName"], "results": collectionResults}
 
-
-		return jsonify(returnedResults)
+		return jsonify({"results": searchResults})
 
 api = Api(app)
 
