@@ -100,7 +100,7 @@ var Leaderboard = React.createClass({
         return (
             <select className="ui fluid search dropdown"
                     multiple={true} value={this.state.value} onChange={this.handleChange}>
-                <option value="">Filter by School</option>
+                <option value="">No Schools Selected</option>
                 {this.schoolList(true).map(function(school) {
                     return <option key={school.id} value={school.id}>{school.name}</option>
                 })}
