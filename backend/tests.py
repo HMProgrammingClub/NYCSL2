@@ -181,9 +181,9 @@ class ProblemTestCase(NYCSLTestCase):
 
 INVALID_EXAMPLE_ENTRY = {"problemID": "incorrectproblemid", "userID": "incorrectuserid", "score": 12}
 
-def generateExampleEntry(db):
-	exampleUser = copy.deepcopy(EXAMPLE_USER)
-	exampleProblem = copy.deepcopy(EXAMPLE_PROBLEM)
+def generateExampleEntry(db, exampleProblem=EXAMPLE_PROBLEM, exampleUser=EXAMPLE_USER):
+	exampleUser = copy.deepcopy(exampleUser)
+	exampleProblem = copy.deepcopy(exampleProblem)
 
 	db.user.insert_one(exampleUser)
 	db.problem.insert_one(exampleProblem)
@@ -198,6 +198,22 @@ class EntryTestCase(NYCSLTestCase):
 		self.db.entry.insert_one(exampleEntry)
 		newEntry = json.loads(self.app.get("/entries").data.decode("utf-8"))[0]
 		assert areDicsEqual(exampleEntry, newEntry)
+
+	def testGetProblem(self):
+		assert b'[]' in self.app.get("/entries").data
+
+		exampleEntry1 = generateExampleEntry(self.db)
+
+		exampleProblem2 = copy.deepcopy(EXAMPLE_PROBLEM)
+		exampleProblem2["name"] = "Other Problem"
+		exampleEntry2 = generateExampleEntry(self.db, exampleProblem=exampleProblem2)
+
+		self.db.entry.insert_one(exampleEntry1)
+		self.db.entry.insert_one(exampleEntry2)
+
+		returnedEntries = json.loads(self.app.get("/entries", query_string={"problemID": exampleEntry1["problemID"]}).data.decode("utf-8"))
+		assert areDicsEqual(exampleEntry1, returnedEntries[0])
+		assert len(returnedEntries) == 1
 
 	def testGet(self):
 		assert self.app.get("/entries/1").status_code == 404
@@ -234,6 +250,7 @@ class SearchTestCase(NYCSLTestCase):
 
 		req = self.app.get("/search", query_string={"query": exampleUser['email']})
 		returnedResults = json.loads(req.data.decode("utf-8"))
+
 		correctResult = {"results": {"user": {"name": "User", "results": [{"title": exampleUser["name"], "url": "/users/?"+str(exampleUser["_id"])}]}}}
 		assert correctResult == returnedResults
 

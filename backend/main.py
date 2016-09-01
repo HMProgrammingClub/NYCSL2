@@ -187,17 +187,24 @@ class ProblemAPI(Resource):
 
 class EntryListAPI(Resource):
 	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("problemID", type=str, required=True, location="json")
-		self.parser.add_argument("userID", type=str, required=True, location="json")
-		self.parser.add_argument("file", type=FileStorage, required=True, location="files")
 		super(EntryListAPI, self).__init__()
 
 	def get(self):
-		return jsonify([a for a in db.entry.find({})])
+		parser = reqparse.RequestParser()
+		parser.add_argument("problemID", type=str, required=False, location="args")
+
+		args = parser.parse_args()
+		if args["problemID"] is not None:
+			return jsonify([a for a in db.entry.find({"problemID": args["problemID"]})])
+		else:
+			return jsonify([a for a in db.entry.find({})])
 
 	def post(self):
-		entry = self.parser.parse_args()
+		parser = reqparse.RequestParser()
+		parser.add_argument("problemID", type=str, required=True, location="json")
+		parser.add_argument("userID", type=str, required=True, location="json")
+		parser.add_argument("file", type=FileStorage, required=True, location="files")
+		entry = parser.parse_args()
 
 		try:
 			if db.problem.find_one({"_id": ObjectId(entry['problemID'])}) == None:
@@ -223,7 +230,6 @@ class EntryListAPI(Resource):
 			status_code = 400
 
 		return jsonify(structuredGradingOutput, status=status_code)
-
 class EntryAPI(Resource):
 	def get(self, entryID):
 		try:
