@@ -55,14 +55,16 @@ class LoginAPI(Resource):
 		accessToken = response["access_token"]
 		githubUser = json.loads(requests.get("https://api.github.com/user", data={"access_token": accessToken}).text)
 
-		user = db.user.find_one({"githubID": githubUser['id']})
-		if user is None:
-			# New user
-			session.pop("userID")
-			return jsonify({"loggedIn": False})
-		else:
+		dbUser = db.user.find_one({"_id": githubUser['id']})
+		if dbUser is None:
+			newUser = {"_id": githubUser["id"], "username": githubUser['username'], "joinDate": datetime.datetime.today().strftime('%Y-%m-%d')}
+			db.user.insert_one(newUser)
+			session['userID'] = newUser["_id"]
 
-		return jsonify({ "loggedIn": True, "user": user })
+			return jsonify({ "loggedIn": True, "user": newUser })
+		else:
+			session['userID'] = dbUser["_id"]
+			return jsonify({ "loggedIn": True, "user": user })
 
 
 class SessionAPI(Resource):
@@ -76,23 +78,11 @@ class SessionAPI(Resource):
 		if "userID" not in session:
 			return jsonify({"loggedIn": False})
 
-		user = db.user.find_one({"_id": ObjectId(session["userID"])})
+		user = db.user.find_one({"_id": session["userID"]})
 		if user is None:
 			session.pop("userID")
 			return jsonify({"loggedIn": False})
 		return jsonify({ "loggedIn": True, "user": user })
-
-	def post(self):
-		if "userID" in session:
-			abort(409)
-
-		args = self.parser.parse_args()
-		user = db.user.find_one({"email": args["email"], "password": hashPassword(args["password"])})
-		if user is None:
-			abort(400)
-
-		session['userID'] = str(user["_id"])
-		return jsonify(user, status=201)
 
 	def delete(self):
 		if "userID" not in session:
@@ -136,7 +126,7 @@ class UserAPI(Resource):
 
 	def get(self, userID):
 		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
+			user = db.user.find_one({"_id": userID})
 		except:
 			abort(404)
 		if user is None:
@@ -145,7 +135,7 @@ class UserAPI(Resource):
 
 	def put(self, userID):
 		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
+			user = db.user.find_one({"_id": userID})
 		except:
 			abort(404)
 		if user is None:
@@ -153,7 +143,7 @@ class UserAPI(Resource):
 
 		args = self.parser.parse_args()
 		try:
-			db.user.find_one({"_id": ObjectId(userID), "password": hashPassword(args["password"])})
+			db.user.find_one({"_id": userID, "password": hashPassword(args["password"])})
 		except:
 			abort(400)
 
@@ -179,7 +169,7 @@ class EventListAPI(Resource):
 		event = self.parser.parse_args()
 
 		try:
-			db.user.find_one({"_id": ObjectId(event['userID'])})
+			db.user.find_one({"_id": event['userID']})
 		except:
 			abort(400)
 
@@ -230,7 +220,7 @@ class EntryListAPI(Resource):
 		try:
 			if db.problem.find_one({"_id": ObjectId(entry['problemID'])}) == None:
 				abort(400)
-			if db.user.find_one({"_id": ObjectId(entry['userID'])}) == None:
+			if db.user.find_one({"_id": entry['userID']}) == None:
 				abort(400)
 		except:
 			abort(400)
