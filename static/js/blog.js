@@ -32,8 +32,15 @@ var Blog = React.createClass({
 var blogID = window.location.href.split("?")[1];
 
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
-    ReactDOM.render(
-        <Blog pages={1} page={1} entries={result} />,
-        document.getElementById('blogBox')
-    );
+    if (result.status == 404) {
+        ReactDOM.render(
+            <span> Oops! It seems like that blog post does not exist! </span>,
+            document.getElementById('blogBox')
+        );
+    } else {
+        ReactDOM.render(
+            <Blog pages={1} page={1} entries={result} />,
+            document.getElementById('blogBox')
+        );
+    }
 });
