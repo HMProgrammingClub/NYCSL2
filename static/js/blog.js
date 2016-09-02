@@ -33,8 +33,7 @@ var blogID = window.location.href.split("?")[1];
 
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
     if (result.status == 404) {
-            document.getElementById('blogBox').innerHTML = "Oops! It seems like that blog post does not exist!";
-        );
+        document.getElementById('blogBox').innerHTML = "Oops! It seems like that blog post does not exist!";
     } else {
         ReactDOM.render(
             <Blog pages={1} page={1} entries={result} />,
