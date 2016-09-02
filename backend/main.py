@@ -1,4 +1,4 @@
-from flask import Flask, abort, session, make_response
+from flask import Flask, abort, session, make_response, redirect
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.cors import CORS
 from werkzeug import FileStorage
@@ -21,11 +21,12 @@ app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
 config.read("../nycsl.ini")
+
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
-
 GITHUB_CLIENT_ID= config["BACKEND"]["githubClientID"]
 GITHUB_CLIENT_SECRET = config["BACKEND"]["githubClientSecret"]
+WEBSITE_DOMAIN = config["BACKEND"]["websiteDomain"]
 
 SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "linkLead": "/users/", "nameField": "name"}, {"collectionName": "problem", "linkLead": "/problems/", "nameField": "name"}, {"collectionName": "blog", "linkLead": "/blogs/", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
@@ -50,7 +51,7 @@ class LoginAPI(Resource):
 			newUser = {"_id": githubUser["id"], "name": githubUser['username'], "joinDate": datetime.datetime.today().strftime('%Y-%m-%d')}
 			db.tempUser.insert_one(newUser)
 
-			return jsonify({ "loggedIn": True, "user": newUser })
+			return redirect(WEBSITE_DOMAIN+"/signup.html#"+newUser["_id"])
 		else:
 			session['userID'] = dbUser["_id"]
 			return jsonify({ "loggedIn": True, "user": user })
