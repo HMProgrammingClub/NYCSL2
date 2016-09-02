@@ -16,7 +16,7 @@ var Blog = React.createClass({
             <div>
                 {this.props.entries.map(function(entry) {
                     return (
-                        <div className="blogEntry" key={entry.id}>
+                        <div className="blogEntry" key={entry.url}>
                             <h1 className="header">{entry.title}</h1>
                             <h3 className="author">by <a href={"/users?u=" + entry.author.username}>{entry.author.name}</a></h3>
                             <h4 className="date">{entry.date}</h4>
