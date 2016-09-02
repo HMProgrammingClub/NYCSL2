@@ -31,8 +31,8 @@ var Blog = React.createClass({
 
 var blogID = window.location.href.split("?")[1];
 
-$("#blogBox").ajaxError(function(event, request, settings){
-    $(this).append("<span>Error requesting page " + settings.url + "</span>");
+$("#messageBox").ajaxError(function(event, request, settings){
+    $(this).html("<span>Error requesting page " + settings.url + "</span>");
 });
 
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
