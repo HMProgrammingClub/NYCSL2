@@ -10,6 +10,6 @@ BLOG = [{'_id': 'tron-post-mortem', 'body': '<p>Lorem ipsum dolor sit amet, cons
 def main():
 	MongoClient().drop_database('nycsl')
 	db = MongoClient().nycsl
-	db.entries.insert(json.loads(ENTRIES))
-	db.problem.insert(json.loads(PROBLEMS))
+	db.entries.insert(json.loads(ENTRIES_JSON))
+	db.problem.insert(json.loads(PROBLEMS_JSON))
 	db.blogs.insert(BLOG)
