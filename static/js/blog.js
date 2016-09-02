@@ -31,12 +31,14 @@ var Blog = React.createClass({
 
 var blogID = window.location.href.split("?")[1];
 
+$("#blogBox").ajaxError(function(event, request, settings){
+    $(this).append("<span>Error requesting page " + settings.url + "</span>");
+});
+
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
-    if (result.status == 404) {
-        document.getElementById('blogBox').innerHTML = "Oops! It seems like that blog post does not exist!";
-    } else {
+    if (result.status !== 404) {
         ReactDOM.render(
-            <Blog pages={1} page={1} entries={result} />,
+            <Blog pages={1} page={1} entries={[result]} />,
             document.getElementById('blogBox')
         );
     }
