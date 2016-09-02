@@ -37,8 +37,9 @@ $("#messageBox").ajaxError(function(event, request, settings){
 
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
     if (result.status !== 404) {
+        if (typeof blogID !== 'undefined') { result = [result];}
         ReactDOM.render(
-            <Blog pages={1} page={1} entries={[result]} />,
+            <Blog pages={1} page={1} entries={result} />,
             document.getElementById('blogBox')
         );
     }
