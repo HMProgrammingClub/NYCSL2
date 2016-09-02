@@ -10,4 +10,4 @@ MongoClient().drop_database('nycsl')
 db = MongoClient().nycsl
 db.entries.insert(json.loads(ENTRIES_JSON))
 db.problem.insert(json.loads(PROBLEMS_JSON))
-db.blogs.insert(BLOG)
+db.blog.insert(BLOG)
