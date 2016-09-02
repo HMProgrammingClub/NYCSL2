@@ -16,9 +16,9 @@ var Blog = React.createClass({
             <div>
                 {this.props.entries.map(function(entry) {
                     return (
-                        <div className="blogEntry" key={entry.id}>
+                        <div className="blogEntry" key={entry.url}>
                             <h1 className="header">{entry.title}</h1>
-                            <h3 className="author">by <a href={"/users?u=" + entry.author.id}>{entry.author.name}</a></h3>
+                            <h3 className="author">by <a href={"/users?u=" + entry.author.username}>{entry.author.name}</a></h3>
                             <h4 className="date">{entry.date}</h4>
                             <div className="content" dangerouslySetInnerHTML={{__html: entry.body}}></div>
                         </div>
@@ -31,9 +31,16 @@ var Blog = React.createClass({
 
 var blogID = window.location.href.split("?")[1];
 
+$("#messageBox").ajaxError(function(event, request, settings){
+    $(this).html("<span>Error requesting page " + settings.url + "</span>");
+});
+
 $.get('http://' + location.hostname + ':5000/blogs' + ((typeof blogID !== 'undefined') ? ('/' + blogID) : ''), function (result) {
-    ReactDOM.render(
-        <Blog pages={1} page={1} entries={result} />,
-        document.getElementById('blogBox')
-    );
+    if (result.status !== 404) {
+        if (typeof blogID !== 'undefined') { result = [result];}
+        ReactDOM.render(
+            <Blog pages={1} page={1} entries={result} />,
+            document.getElementById('blogBox')
+        );
+    }
 });

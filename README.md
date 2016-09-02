@@ -12,7 +12,7 @@ First, clone the repository:
 
 ```$ git clone https://github.com/HMProgrammingClub/NYCSL2.git```
 
-Then, install the backend:
+Then, install the backend's dependencies:
 
 ```$ cd NYCSL2/backend && sudo ./install.sh```
 
