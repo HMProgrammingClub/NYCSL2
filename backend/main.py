@@ -246,10 +246,7 @@ class BlogListAPI(Resource):
 
 class BlogAPI(Resource):
 	def get(self, blogID):
-		try:
-			blog = db.blog.find_one({"_id": ObjectId(blogID)})
-		except:
-			abort(404)
+		blog = db.blog.find_one({"_id": blogID})
 		if blog is None:
 			abort(404)
 		return jsonify(blog)
