@@ -15,11 +15,10 @@ var QualifiedLeaderboard = React.createClass({
                                         <img src={"https://avatars0.githubusercontent.com/u/" + student.githubID + "?v=3&s=50"} className="ui mini rounded image" />
                                         <div className="content">
                                             { student.name }
-                                            <div className="sub header">{ student.school.name }</div>
+                                            <div className="sub header">{ student.schoolID }</div>
                                         </div>
                                     </h4>
                                 </td>
-                                <td>{ student.compositeScore }</td>
                             </tr>
                         );
                     })}
@@ -35,8 +34,8 @@ var UserGrid = React.createClass({
         this.props.students.forEach(function(student) {
             var exists = false;
             schools.forEach(function(school) {
-                if (school.id === student.school.id) exists = true;
-            }); if (!exists) schools.push(obj?student.school:student.school.id);
+                if (school.id === student.schoolID) exists = true;
+            }); if (!exists) schools.push(obj?student.school:student.schoolID);
         });
         return schools;
     },
@@ -76,7 +75,7 @@ var UserGrid = React.createClass({
         var students = this.props.students.filter(function(student) {
             var schoolContained = false;
             schoolIDs.forEach(function(schoolID) {
-                if (student.school.id === schoolID) schoolContained = true;
+                if (student.schoolID === schoolID) schoolContained = true;
             }); return schoolContained;
         });
 
@@ -93,7 +92,7 @@ var UserGrid = React.createClass({
                             <div className="content">
                                 <div className="header">{ student.name }</div>
                                 <div className="meta">
-                                    { student.school.name }
+                                    { student.schoolID }
                                 </div>
                             </div>
                             </div>
@@ -111,12 +110,8 @@ var UserGrid = React.createClass({
 // ex:
 
 $.get('http://' + location.hostname + ':5000/users', function (result) {
-    var QualifiedData = result.filter(function(user) {
-        return user.compositeScore != 0;
-    });
-
     ReactDOM.render(
-        <QualifiedLeaderboard students={QualifiedData} />,
+        <QualifiedLeaderboard students={result} />,
         document.getElementById('qualifiedBox')
     );
 
