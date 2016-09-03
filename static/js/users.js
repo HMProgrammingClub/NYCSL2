@@ -9,13 +9,13 @@ var QualifiedLeaderboard = React.createClass({
                 <tbody>
                     {this.props.students.map(function(student) {
                         return (
-                            <tr key={ student.id }>
+                            <tr key={ student.name }>
                                 <td>
                                     <h4 className="ui image header">
                                         <img src={"https://avatars0.githubusercontent.com/u/" + student.githubID + "?v=3&s=50"} className="ui mini rounded image" />
                                         <div className="content">
                                             { student.name }
-                                            <div className="sub header">{ student.school.name }</div>
+                                            <div className="sub header">{ student.schoolID }</div>
                                         </div>
                                     </h4>
                                 </td>
@@ -35,8 +35,8 @@ var UserGrid = React.createClass({
         this.props.students.forEach(function(student) {
             var exists = false;
             schools.forEach(function(school) {
-                if (school.id === student.school.id) exists = true;
-            }); if (!exists) schools.push(obj?student.school:student.school.id);
+                if (school.id === student.schoolID) exists = true;
+            }); if (!exists) schools.push(obj?student.school:student.schoolID);
         });
         return schools;
     },
@@ -76,7 +76,7 @@ var UserGrid = React.createClass({
         var students = this.props.students.filter(function(student) {
             var schoolContained = false;
             schoolIDs.forEach(function(schoolID) {
-                if (student.school.id === schoolID) schoolContained = true;
+                if (student.schoolID === schoolID) schoolContained = true;
             }); return schoolContained;
         });
 
@@ -85,15 +85,15 @@ var UserGrid = React.createClass({
             <div className="ui four column doubling grid">
                 {students.map(function(student) {
                     return (
-                        <div className="column" key={student.id}>
+                        <div className="column" key={student.name}>
                             <div className="ui fluid card">
-                            <a className="image" href={"/users/"+student.username}>
+                            <a className="image" href={"/users/"+student.name}>
                                 <img src={"https://avatars0.githubusercontent.com/u/" + student.githubID + "?v=3&s=300"} />
                             </a>
                             <div className="content">
                                 <div className="header">{ student.name }</div>
                                 <div className="meta">
-                                    { student.school.name }
+                                    { student.schoolID }
                                 </div>
                             </div>
                             </div>
