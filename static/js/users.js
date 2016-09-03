@@ -36,7 +36,7 @@ var UserGrid = React.createClass({
             var exists = false;
             schools.forEach(function(school) {
                 if (school === student.schoolID) exists = true;
-            }); if (!exists) schools.push(obj?student.school:student.schoolID);
+            }); if (!exists) schools.push(student.schoolID);
         });
         return schools;
     },
