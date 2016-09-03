@@ -112,7 +112,7 @@ var UserGrid = React.createClass({
 
 $.get('http://' + location.hostname + ':5000/users', function (result) {
     var QualifiedData = result.filter(function(user) {
-        return user.compositeScore != 0;
+        return user.qualified;
     });
 
     ReactDOM.render(
