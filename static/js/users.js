@@ -35,7 +35,7 @@ var UserGrid = React.createClass({
         this.props.students.forEach(function(student) {
             var exists = false;
             schools.forEach(function(school) {
-                if (school.id === student.schoolID) exists = true;
+                if (school === student.schoolID) exists = true;
             }); if (!exists) schools.push(obj?student.school:student.schoolID);
         });
         return schools;
@@ -66,7 +66,7 @@ var UserGrid = React.createClass({
                     multiple={true} value={this.state.value} onChange={this.handleChange}>
                 <option value="">Filter by School</option>
                 {this.schoolList(true).map(function(school) {
-                    return <option key={school.id} value={school.id}>{school.name}</option>
+                    return <option key={school} value={school}>{school}</option>
                 })}
             </select>
         );
