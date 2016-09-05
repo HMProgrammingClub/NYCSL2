@@ -16,8 +16,9 @@ def start():
 def move(key, move):
     result = games[key].make_move(move)
     if result != 0:
+        send_string("Result: " + ("SUCCESS" if result == 1 else "FAILURE") + " in " + str(time.time()-games[key].start_time) + " seconds.")
         del games[key]
-        return result
+        return time.time()-games[key].start_time if result == 1 else -1 # -1 indicates failure; any other value is the time it took them to complete the maze.
     games[key].update_visibility()
     games[key].delay()
     send_string(games[key].serialize()) # Josh, I'm assuming that 'send_string' exists, because I have no idea how you want it to be written.
