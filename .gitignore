@@ -271,3 +271,5 @@ nohub.out
 gitpull.php
 
 nycsl.ini
+
+*.gch
