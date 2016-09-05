@@ -2,10 +2,6 @@ var QualifiedLeaderboard = React.createClass({
     render: function() {
         return (
             <table className="ui very basic celled table fluid unstackable">
-                <thead><tr>
-                    <th>Student</th>
-                    <th>Composite Score</th>
-                </tr></thead>
                 <tbody>
                     {this.props.students.map(function(student) {
                         return (
@@ -19,7 +15,6 @@ var QualifiedLeaderboard = React.createClass({
                                         </div>
                                     </h4>
                                 </td>
-                                <td>{ student.compositeScore }</td>
                             </tr>
                         );
                     })}
@@ -91,7 +86,7 @@ var UserGrid = React.createClass({
                                 <img src={"https://avatars0.githubusercontent.com/u/" + student.githubID + "?v=3&s=300"} />
                             </a>
                             <div className="content">
-                                <div className="header">{ student.name }</div>
+                                <div className="header"><a href={"/user?"+student._id}>{ student.name }</a></div>
                                 <div className="meta">
                                     { student.schoolID }
                                 </div>
