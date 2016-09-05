@@ -14,6 +14,10 @@ GLASS = 3 # transparent
 GOAL = 4 # transparent
 PLAYER = 5
 
+# Max amount of time for player to respond.
+MAX_SEC = 60
+MIN_DELAY = 0.025
+
 # The following class and functions are for testing visibility.
 class Point:
     def __init__(self, x = 0, y = 0):
@@ -46,7 +50,7 @@ def does_intersect(l1, l2):
     if o4 == 0 and col_is_on_seg(l2[0], l2[1], l1[1]): return True
     return False
 
-class Map:
+class Maze:
     def __init__(self, width, height, seed):
         self.height = height
         self.width = width
@@ -74,6 +78,7 @@ class Map:
                     self.opaque_walls.append((Point(x+1, y), Point(x+1, y+1)))
                     self.opaque_walls.append((Point(x, y+1), Point(x+1, y+1)))
         self.opaque_walls = set(self.opaque_walls)
+        self.start_time = time.time()
     def make_move(self, dir):
         self.contents[self.player_loc[1]][self.player_loc[0]] = EMPTY
         if dir == NORTH and self.player_loc[1] != 0 and (self.contents[self.player_loc[1]-1][self.player_loc[0]] == EMPTY or self.contents[self.player_loc[1]-1][self.player_loc[0]] == GOAL):
@@ -84,17 +89,17 @@ class Map:
             self.player_loc = (self.player_loc[0], self.player_loc[1]+1)
         elif dir == WEST and self.player_loc[0] != 0 and (self.contents[self.player_loc[1]][self.player_loc[0]-1] == EMPTY or self.contents[self.player_loc[1]][self.player_loc[0]-1] == GOAL):
             self.player_loc = (self.player_loc[0]-1, self.player_loc[1])
-        if self.contents[self.player_loc[1]][self.player_loc[0]] == GOAL: return True
+        if self.contents[self.player_loc[1]][self.player_loc[0]] == GOAL: return 1
         self.contents[self.player_loc[1]][self.player_loc[0]] = PLAYER
-        return False
-    def get_neighbors(self, loc):
+        return 0 if time.time() - self.start_time < MAX_SEC else -1
+    def _get_neighbors(self, loc):
         neighbors = []
         if loc[1] != 0: neighbors.append((loc[0], loc[1]-1))
         if loc[0] != self.width-1: neighbors.append((loc[0]+1, loc[1]))
         if loc[1] != self.height-1: neighbors.append((loc[0], loc[1]+1))
         if loc[0] != 0: neighbors.append((loc[0]-1, loc[1]))
         return neighbors
-    def test_visible(self, loc):
+    def _test_visible(self, loc):
         corners = [ Point(loc[0], loc[1]),Point(loc[0]+1, loc[1]),Point(loc[0], loc[1]+1),Point(loc[0]+1, loc[1]+1) ]
         center = Point(self.player_loc[0]+0.5, self.player_loc[1]+0.5)
         for p in corners:
@@ -131,6 +136,8 @@ class Map:
             for x in range(0, self.width):
                 if self.visibility[y][x] == -1:
                     self.visibility[y][x] = False
+    def delay(self):
+        time.sleep(MIN_DELAY)
     def serialize(self):
         grid = []
         for y in range(0, self.height):
@@ -142,19 +149,3 @@ class Map:
                     row.append(UNKNOWN)
             grid.append(row)
         return json.dumps(grid)
-
-MAX_SEC = 60
-
-m = Map(5, 5, 0)
-start_time = time.time();
-game_over = False
-while not game_over:
-    m.update_visibility()
-    send_string(m.serialize())
-    try:
-        move = get_move(MAX_SEC + start_time - time.time())
-        game_over = m.make_move(move)
-    except Exception:
-        print(-1)
-        sys.exit(0)
-print(time.time() - start_time)
