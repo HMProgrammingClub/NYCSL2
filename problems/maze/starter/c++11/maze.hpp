@@ -6,17 +6,17 @@
 #include <sstream>
 #include <algorithm>
 
-#define NORTH 0
-#define EAST 1
-#define SOUTH 2
-#define WEST 3
+const int NORTH = 0;
+const int EAST = 1;
+const int SOUTH = 2;
+const int WEST = 3;
 
-#define UNKNOWN 0
-#define EMPTY 1
-#define WALL 2
-#define GLASS 3
-#define GOAL 4
-#define PLAYER 5
+const int UNKNOWN = 0;
+const int EMPTY = 1;
+const int WALL = 2;
+const int GLASS = 3;
+const int GOAL = 4;
+const int PLAYER = 5;
 
 typedef std::vector< std::vector<int> > Maze;
 static std::istream & operator>>(std::istream & i, Maze & m) {
