@@ -178,7 +178,7 @@ $.get('http://' + location.hostname + ':5000/problems', function (resultArr) {
 	);
 
     var id = result.id;
-    $.get('http://' + location.hostname + ':5000/entries', function (result) {
+    $.get('http://' + location.hostname + ':5000/entries/' + result.id, function (result) {
     	ReactDOM.render(
     	    <Leaderboard data={result} id={id} />,
     	    document.getElementById('leaderBoard')

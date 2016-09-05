@@ -1,4 +1,4 @@
-from flask import Flask, abort, session, make_response
+from flask import Flask, abort, session, make_response, redirect
 from flask_restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.cors import CORS
 from werkzeug import FileStorage
@@ -10,20 +10,23 @@ from pymongo import MongoClient, TEXT
 
 import configparser
 
-import hashlib
-from base64 import b64encode
-
 import subprocess
 import shlex
 
 import datetime
 
+import requests
+
 app = Flask(__name__, static_url_path="")
 
 config = configparser.ConfigParser()
 config.read("../nycsl.ini")
+
 app.secret_key = config["BACKEND"]["secretKey"]
 SALT = config["BACKEND"]["salt"]
+GITHUB_CLIENT_ID= config["BACKEND"]["githubClientID"]
+GITHUB_CLIENT_SECRET = config["BACKEND"]["githubClientSecret"]
+WEBSITE_DOMAIN = config["BACKEND"]["websiteDomain"]
 
 SEARCHABLE_COLLECTION_ATTRIBUTES = [{"collectionName": "user", "categoryName": "User", "linkLead": "/users/?", "nameField": "name"}, {"collectionName": "problem", "categoryName": "Problem", "linkLead": "/problems/?", "nameField": "name"}, {"collectionName": "blog", "categoryName": "Blog", "linkLead": "/blogs/?", "nameField": "title"}]
 PROBLEMS_DIR = "../problems/"
@@ -32,39 +35,37 @@ CURRENT_SEASON = 0
 
 db = MongoClient().nycsl
 
-def hashPassword(password):
-	passbits = password.encode('utf-8')
-	saltbits = SALT.encode('utf-8')
-	return b64encode(hashlib.pbkdf2_hmac('sha256', passbits, saltbits, 100000)).decode('utf-8')
-
 class LoginAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		super(LoginAPI, self).__init__()
+	def get(self):
+		parser = reqparse.RequestParser()
+		parser.add_argument("code", type=str, required=True, location="json")
+		code = parser.parse_args()["code"]
 
+		response = json.loads(requests.post("https://github.com/login/oauth/access_token", json={"code": code, "client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET}).text)
+
+		accessToken = response["access_token"]
+		githubUser = json.loads(requests.get("https://api.github.com/user", data={"access_token": accessToken}).text)
+
+		dbUser = db.user.find_one({"_id": githubUser['id']})
+		if dbUser is None:
+			newUser = {"_id": githubUser["id"], "name": githubUser['username'], "joinDate": datetime.datetime.today().strftime('%Y-%m-%d')}
+			db.tempUser.insert_one(newUser)
+
+			return redirect(WEBSITE_DOMAIN+"/signup.html#"+newUser["_id"])
+		else:
+			session['userID'] = dbUser["_id"]
+			return jsonify({ "loggedIn": True, "user": user })
+
+class SessionAPI(Resource):
 	def get(self):
 		if "userID" not in session:
 			return jsonify({"loggedIn": False})
 
-		user = db.user.find_one({"_id": ObjectId(session["userID"])})
+		user = db.user.find_one({"_id": session["userID"]})
 		if user is None:
 			session.pop("userID")
 			return jsonify({"loggedIn": False})
 		return jsonify({ "loggedIn": True, "user": user })
-
-	def post(self):
-		if "userID" in session:
-			abort(409)
-
-		args = self.parser.parse_args()
-		user = db.user.find_one({"email": args["email"], "password": hashPassword(args["password"])})
-		if user is None:
-			abort(400)
-
-		session['userID'] = str(user["_id"])
-		return jsonify(user, status=201)
 
 	def delete(self):
 		if "userID" not in session:
@@ -74,67 +75,39 @@ class LoginAPI(Resource):
 		return jsonify({"result": True})
 
 class UserListAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, required=True, location="json")
-		self.parser.add_argument("password", type=str, required=True, location="json")
-		self.parser.add_argument("name", type=str, required=True, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		super(UserListAPI, self).__init__()
-
 	def get(self):
 		return jsonify([a for a in db.user.find({})])
 
 	def post(self):
-		user = self.parser.parse_args()
-		user["isVerified"] = False
-		user["joinDate"] = datetime.datetime.today().strftime('%Y-%m-%d')
-		user["password"] = hashPassword(user["password"])
+		parser = reqparse.RequestParser()
+		parser.add_argument("schoolID", type=str, required=True, location="json")
+		parser.add_argument("userID", type=str, required=True, location="json")
+
+		args = parser.parse_args()
+
+		user = db.tempUser.find_one({"_id": args["userID"]})
+		if user is None: abort(400)
+
+		school = db.school.find_one({"_id": args["schoolID"]})
+		if school is None: abort(400)
+
+		user["schoolID"] = args["schoolID"]
 
 		db.user.insert_one(user)
+		session['userID'] = user["_id"]
 
 		return jsonify(user, status=201)
 
-
 class UserAPI(Resource):
-	def __init__(self):
-		self.parser = reqparse.RequestParser()
-		self.parser.add_argument("email", type=str, location="json")
-		self.parser.add_argument("password", type=str, location="json")
-		self.parser.add_argument("name", type=str, location="json")
-		self.parser.add_argument("school", type=str, location="json")
-		self.parser.add_argument("isVerified", type=str, location="json")
-		super(UserAPI, self).__init__()
-
 	def get(self, userID):
 		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
+			user = db.user.find_one({"_id": userID})
 		except:
 			abort(404)
 		if user is None:
 			abort(404)
 		return jsonify(user)
 
-	def put(self, userID):
-		try:
-			user = db.user.find_one({"_id": ObjectId(userID)})
-		except:
-			abort(404)
-		if user is None:
-			abort(404)
-
-		args = self.parser.parse_args()
-		try:
-			db.user.find_one({"_id": ObjectId(userID), "password": hashPassword(args["password"])})
-		except:
-			abort(400)
-
-		for k, v in args.items():
-			if v is not None:
-				user[k] = v
-
-		db.user.save(user)
-		return jsonify(user)
 
 class EventListAPI(Resource):
 	def __init__(self):
@@ -151,7 +124,7 @@ class EventListAPI(Resource):
 		event = self.parser.parse_args()
 
 		try:
-			db.user.find_one({"_id": ObjectId(event['userID'])})
+			db.user.find_one({"_id": event['userID']})
 		except:
 			abort(400)
 
@@ -209,7 +182,7 @@ class EntryListAPI(Resource):
 		try:
 			if db.problem.find_one({"_id": ObjectId(entry['problemID'])}) == None:
 				abort(400)
-			if db.user.find_one({"_id": ObjectId(entry['userID'])}) == None:
+			if db.user.find_one({"_id": entry['userID']}) == None:
 				abort(400)
 		except:
 			abort(400)

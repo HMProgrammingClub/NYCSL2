@@ -71,54 +71,6 @@ var NavBar = React.createClass({
     openLoginModal: function() {
         $('.ui.modal').modal('show');
     },
-    signInModal: function() {
-        return (
-            <div className="ui modal">
-                <div className="header">
-                    Login with Github
-                </div>
-                <div className="image content">
-                    <div className="description">
-                        <div className="ui header">Click the button below to login with Github.</div>
-                        <p>If you don't already have an account linked to your Github profile, that's ok. Well automatically detect it and help you get things set up.</p>
-                    </div>
-                </div>
-                <div className="actions">
-                    <button className="ui button fluid">
-                        <i className="github icon"></i>
-                        Connect to Github
-                    </button>
-                </div>
-            </div>
-        );
-    },
-    signUpModal: function() {
-        return (
-            <div className="ui modal">
-                <div className="header">
-                    Signup with Github
-                </div>
-                <div className="image content"><div className="description">
-                    <div className="ui form">
-                        <div className="field">
-                            <label>School</label>
-                            <select className="ui fluid search dropdown selection">
-                                <option value="">Select School</option>
-                                <option value="HM">Horace Mann School</option>
-                                <option value="DA">Dalton School</option>
-                                <option value="ST">Stuyvesant</option>
-                            </select>
-                        </div>
-                    </div>
-                </div></div>
-                <div className="actions">
-                    <button className="ui button fluid">
-                        Create Account
-                    </button>
-                </div>
-            </div>
-        );
-    },
     loggedInMenu: function(githubID) {
         return (
             <div className="right menu">
@@ -145,11 +97,10 @@ var NavBar = React.createClass({
     loggedOutMenu: function() {
         return (
             <div className="right menu">
-                <a className="item" onClick={this.openLoginModal}>
+                <a className="item" href="https://github.com/login/oauth/authorize?scope=user:email&client_id=787157db4920b1e60c4b">
                     <i className="sign in icon"></i>
                     Login with Github
                 </a>
-                { this.signInModal() }
             </div>
         );
     },
