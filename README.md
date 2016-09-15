@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/HMProgrammingClub/NYCSL2.svg?branch=master)](https://travis-ci.org/HMProgrammingClub/NYCSL2)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/HMProgrammingClub/NYCSL2/master/LICENSE)
 
-NYCSL, or the New York Computer Science League, is an online, high school programming competition.
+NYCSL, or the New York Computer Science League, is an online, high school programming competition. NYCSL2 is a rewrite of [the original codebase](https://github.com/HMProgrammingClub/NYCSL) with a focus on sustainability and newer tools (switching from PHP to Flask, from JQuery to React, etc).
 
 Each month at midnight a new challenge is posted. Programmers in NYCSL have one month to upload as many solutions as they like; only the top score is shown. Solutions are instantly graded and put up on both global and school-wide leaderboards. Problems are designed such that they are suitable for programmers of all skill levels; beginners are encouraged to participate.
 
